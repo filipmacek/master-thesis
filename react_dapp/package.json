@@ -1,0 +1,55 @@
+{
+  "name": "react_dapp",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "bootstrap": "^4.5.0",
+    "react": "^16.13.1",
+    "react-bootstrap": "^1.2.2",
+    "react-dom": "^16.13.1",
+    "react-scripts": "3.4.1",
+    "rimble-ui": "^0.14.0",
+    "styled-components": "^5.1.1",
+    "web3": "^1.2.9"
+  },
+  "scripts": {
+    "start": "webpack --config webpack.config.js --watch",
+    "build": "webpack --config webpack.config.js --mode production",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/plugin-transform-runtime": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/runtime": "^7.5.5",
+    "babel-loader": "^8.0.6",
+    "css-loader": "^3.6.0",
+    "style-loader": "^1.2.1",
+    "webpack": "^4.43.0",
+    "webpack-bundle-tracker": "^1.0.0-alpha.1",
+    "webpack-cli": "^3.3.12"
+  }
+}
