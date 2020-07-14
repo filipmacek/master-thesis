@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: geth-client-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: geth-client
+  template:
+    metadata:
+      labels:
+        app: geth-client
+    spec:
+      containers:
+        - name: geth-client
+          image: ethereum/client-go
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 8546
+          args: [
+            "--testnet",
+            "--ws",
+            "--ipcdisable",
+            "--wsaddr 0.0.0.0",
+            "--wsorigins='*'",
+            "--datadir /geth"
+           ]
+          volumeMounts:
+            - mountPath: /geth
+              name: geth-path-data
+      volumes:
+        - name: geth-path-data
+          persistentVolumeClaim:
+            claimName: geth-client-claim

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongod
+spec:
+  serviceName: mongodb-service
+  replicas: 1
+  selector:
+    matchLabels:
+      role: mongo
+      environment: test
+  template:
+    metadata:
+      labels:
+        role: mongo
+        environment: test
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: mongo
+          image: arm64v8/mongo:4-xenial
+          command:
+            - mongod
+            - "--replSet"
+            - rs0
+            - "--smallfiles"
+            - "--noprealloc"
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongo-stateful-volume
+              mountPath: /data/db
+        # - name: mongo-sidecar
+        #   image: cvallance/mongo-k8s-sidecar
+        #   env:
+        #     - name: MONGO_SIDECAR_POD_LABELS
+        #       value: "role=mongo,environment=test"
+      volumes:
+        - name: mongo-stateful-volume
+          persistentVolumeClaim:
+            claimName: mongodb-claim

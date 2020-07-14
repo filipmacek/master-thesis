@@ -1,0 +1,4 @@
+SECRET_KEY=django_secret_key
+POSTGRES_DB=website
+POSTGRES_USER=website_user
+POSTGRES_PASSWORD=pass

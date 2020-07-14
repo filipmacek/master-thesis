@@ -1,0 +1,8 @@
+[Unit]
+Description=Cloudflare dynamic IP updating
+
+[Service]
+WorkingDirectory=/home/pi/cloudflare
+User=pi
+ExecStart=/home/pi/cloudflare/checkip.sh
+

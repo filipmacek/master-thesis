@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-env-configmap
+data:
+  POSTGRES_DB: test
+  POSTGRES_USER: test_user
+  POSTGRES_PASSWORD: pass
