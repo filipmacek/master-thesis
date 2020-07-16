@@ -11,9 +11,8 @@ RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf;
 
 WORKDIR $FRONTENDDIR
 
-COPY index.html .
-COPY bundles/main.js bundles/
-
+COPY . .
+RUN rm -rf node_modules/
 RUN rm /etc/nginx/sites-enabled/default
 COPY frontend_nginx.conf /etc/nginx/sites-enabled
 
