@@ -19,7 +19,11 @@ class WalletBlock extends Component {
     renderContent =() =>{
         if(this.props.account && this.props.accountValidated) {
             return (
-                <h1>Account validated</h1>
+                <AccountOverview
+                    account={this.props.account}
+                    accountBalanceLow={this.props.accountBalanceLow}
+                    accountBalance={this.props.accountBalance}
+                />
             )
         }else {
             return (
@@ -33,7 +37,7 @@ class WalletBlock extends Component {
 
     render() {
         return (
-           <Card maxWidth={"640px"} mx={"auto"} p={4} mt={2}>
+           <Card maxWidth={"640px"} mx={"auto"} p={3} mt={2}>
                <Text fontWeight={3} mb={3} fontFamily="sansSerif">
                    Wallet
                </Text>

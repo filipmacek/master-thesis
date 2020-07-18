@@ -7,17 +7,11 @@ import NetworkIndicator from '@rimble/network-indicator'
 
 import {Box, Flex, Heading, Text, ThemeProvider,Card} from "rimble-ui";
 import WalletBlock from "./components/WalletBlock";
+import {ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css'
+import SmartContractPanel from "./utils/panels/SmartContractPanel";
 
-function Proba(props){
-    console.log("proba props")
-    console.log(props)
-    const imaweb3 = props.web3Fallback
-    if (imaweb3){
-         return <h1>Nema web3 buraz</h1>
-    }else {
-        return <h1>sve je sjajno</h1>
-    }
-}
+
 
 class App extends Component {
     state = {
@@ -41,15 +35,18 @@ class App extends Component {
     render(){
         return (
             <ThemeProvider>
+
                 <DAppWeb3 config={this.config}>
                   <DAppWeb3.Consumer>
                       {({
                           account,
                           accountBalance,
+                          contract,
                           connectAndValidateAccount,
                           accountValidated,
                           web3Fallback,
-                          network
+                          network,
+                          users
                         })=>(
                             <Box>
                               <Header/>
@@ -81,16 +78,26 @@ class App extends Component {
 
                                 <WalletBlock
                                     account={account}
+                                    accountBalance={accountBalance}
                                     accountValidated={accountValidated}
                                     connectAndValidateAccount={connectAndValidateAccount}
                                     />
-
-
-
+                                   <SmartContractPanel/>
                             </Box>
                       )}
                   </DAppWeb3.Consumer>
                 </DAppWeb3>
+                <ToastContainer
+                position="bottom-right"
+                autoClose={4000}
+                hideProgressBar
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
             </ThemeProvider>
 
         );

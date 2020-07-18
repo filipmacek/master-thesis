@@ -3,7 +3,224 @@ import ReactDOM from 'react-dom'
 import {Web3Utils} from "./Web3Utils";
 import Web3 from "web3";
 import ConnectionModalsUtil from "./ConnectionModalsUtil";
+import {toast, ToastContainer} from "react-toastify";
+import SmartContractControl from "./panels/SmartContractPanel";
 
+// Address of smart contract
+const contractAddress="0xc9c9c05859D3B2DDAb93628167D7b3d84DaC78f5"
+
+// Contract ABI -got it from remixd
+const abi=[
+    {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "index",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "username",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "addr",
+                "type": "address"
+            }
+        ],
+        "name": "NewUserCreated",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "_username",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_password",
+                "type": "string"
+            }
+        ],
+        "name": "addUser",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "index",
+                "type": "uint256"
+            }
+        ],
+        "name": "getAddress",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "index",
+                "type": "uint256"
+            }
+        ],
+        "name": "getPassword",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "index",
+                "type": "uint256"
+            }
+        ],
+        "name": "getUsername",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getUsersCount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "_username",
+                "type": "string"
+            }
+        ],
+        "name": "isUser",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "users",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "username",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "password",
+                "type": "string"
+            },
+            {
+                "internalType": "address",
+                "name": "addr",
+                "type": "address"
+            },
+            {
+                "internalType": "bool",
+                "name": "isExist",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "name": "usersByUsername",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "usersCount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+]
 
 
 
@@ -25,17 +242,35 @@ const DAppTransactionContext= React.createContext({
         checkNetwork:()=>{}
     },
     modals: {
-        data:{
-            noWeb3BrowserModalIsOpen:{},
-            noWalletModalIsOpen:{},
-            connectionModalIsOpen:{},
-            wrongNetworkModalIsOpen:{}
-
+        data: {
+            noWeb3BrowserModalIsOpen: {},
+            noWalletModalIsOpen: {},
+            connectionModalIsOpen: {},
+            accountConnectionPending: {},
+            userRejectedConnect: {},
+            accountValidationPending: {},
+            userRejectedValidation: {},
+            wrongNetworkModalIsOpen: {},
+            transactionConnectionModalIsOpen: {},
+            lowFundsModalIsOpen: {}
         },
         methods: {
-            openNoWeb3BrowserModal: ()=>{},
-            closeNoWeb3BrowserModal: ()=>{},
-
+            openNoWeb3BrowserModal: () => {},
+            closeNoWeb3BrowserModal: () => {},
+            closeConnectionPendingModal: () => {},
+            openConnectionPendingModal: () => {},
+            closeUserRejectedConnectionModal: () => {},
+            openUserRejectedConnectionModal: () => {},
+            closeValidationPendingModal: () => {},
+            openValidationPendingModal: () => {},
+            closeUserRejectedValidationModal: () => {},
+            openUserRejectedValidationModal: () => {},
+            closeWrongNetworkModal: () => {},
+            openWrongNetworkModal: () => {},
+            closeTransactionConnectionModal: () => {},
+            openTransactionConnectionModal: () => {},
+            closeLowFundsModal: () => {},
+            openLowFundsModal: () => {}
         }
     },
     transaction: {
@@ -44,7 +279,8 @@ const DAppTransactionContext= React.createContext({
         },
         meta:{},
         methods:{}
-    }
+    },
+    users:[]
 
 })
 
@@ -116,7 +352,8 @@ class DAppWeb3 extends Component {
     }
 
     initAccount = async () => {
-
+        console.log("initAccount")
+        this.openConnectionPendingModal()
         // try metamask connect method
         if(window.ethereum){
             // Request Account Access
@@ -124,15 +361,18 @@ class DAppWeb3 extends Component {
             try{
                 await window.ethereum.enable().then(wallets =>{
                     const account= wallets[0]
-                    this.close
+                    this.closeConnectionPendingModal()
                     this.setState({account})
                     console.log("Wallet address ",this.state.account)
 
                     //After Account is completed, get balance
-                    this.getAccountBalance()
+                    this.getAccountBalance(account)
+
+                    // Init contract
+                    this.initContract()
 
                     //watch for account change
-                    this.pollAccountUpdates()
+                    this.pullAccountChange()
 
                 })
             }catch (e) {
@@ -145,7 +385,72 @@ class DAppWeb3 extends Component {
         }
     }
 
-    pollAccountUpdates = () => {
+    initContract= async () => {
+        console.log("Connecting and syncing with smart contract")
+
+        try {
+            const contract = await new this.state.web3.eth.Contract(abi,contractAddress)
+            this.setState({contract})
+            console.log("Connected with contract")
+            console.log(contract)
+        } catch (e) {
+           console.log("Could not create contract.")
+           toast.error("Contract creation failed",{
+               position: "bottom-right",
+               autoClose: 3000,
+               hideProgressBar: true,
+               closeOnClick: true,
+               pauseOnHover: false,
+               draggable: true,
+               progress: undefined,
+           })
+        }
+
+    }
+
+    fetchUsers = () =>{
+        console.log("getting users")
+
+        try {
+            this.state.contract.methods.getUsersCount().call().then(value => {
+                console.log("Users count: ", value)
+                this.setState({
+                    users:[]
+                })
+                var i;
+                let promise1,promise2,promise3;
+                for(i=1;i <=value;i++) {
+                    console.log("i ", i)
+                    promise1 = this.state.contract.methods.getUsername(i).call()
+                    promise2 = this.state.contract.methods.getPassword(i).call()
+                    promise3 = this.state.contract.methods.getAddress(i).call()
+                    Promise.all([promise1, promise2, promise3]).then(result => {
+                        this.setState(prevState => ({
+                            users: [...prevState.users, {username: result[0], password: result[1], address: result[2]}]
+                        }))
+                    })
+                }
+            }).catch(error => {
+                console.log("Cannot get users with 2")
+            })
+        }catch (e) {
+            console.log("error getting users with 2",e)
+        }
+
+
+
+    }
+
+    fetchRoutes = () =>{
+
+    }
+
+    fetchNodes= () => {
+
+    }
+
+
+    pullAccountChange = () => {
         let account = this.state.account
         let requiresUpdate=false
         let accountInterval = setInterval(()=>{
@@ -153,14 +458,18 @@ class DAppWeb3 extends Component {
             if(
                 this.state.modals.data.accountConnectionPending ||
                 this.state.modals.data.accountValidationPending
-            ) {return}
+            ) {
+                return
+            }
             if(window.ethereum.isConnected()){
                 const updatedAccount= window.web3.eth.accounts[0]
                 if(updatedAccount.toLowerCase() !== account.toLowerCase()){
                     requiresUpdate=true
                 }
 
+                // If account balance changed, that means you got some funds
                 this.getAccountBalance()
+
 
                 if(requiresUpdate){
                     clearInterval(accountInterval)
@@ -188,32 +497,36 @@ class DAppWeb3 extends Component {
 
     getAccountBalance= async account => {
         const localAccount=account ? account : this.state.account
-        if(localAccount){
+        if (localAccount) {
             try {
-                await this.state.web3.eth.getBalance(localAccount)
+                await this.state.web3.eth
+                    .getBalance(localAccount)
                     .then(accountBalance => {
-                        if(!isNaN(accountBalance)){
-                            accountBalance=this.state.web3.util.fromWei(accountBalance,'ether')
-                            accountBalance=parseFloat(accountBalance)
+                        if (!isNaN(accountBalance)) {
+                            accountBalance = this.state.web3.utils.fromWei(
+                                accountBalance,
+                                "ether"
+                            );
+                            accountBalance = parseFloat(accountBalance);
 
-                            // only update if account balance changed
-                            if(accountBalance !== this.state.accountBalance) {
-                                this.setState({accountBalance})
-                                console.log("account balance ",accountBalance)
+                            // Only update if changed
+                            if (accountBalance !== this.state.accountBalance) {
+                                this.setState({ accountBalance });
                                 this.determineAccountBalanceLow();
                             }
-                        }else {
-                            this.setState({accountBalance:"--"})
-                            console.log("Account balance failed: ",accountBalance)
+                        } else {
+                            this.setState({ accountBalance: "--" });
+                            console.log("account balance FAILED", accountBalance);
                         }
-                    })
-
-            } catch (e) {
-                console.log("No account on which to get account balance")
-                return false
+                    });
+            } catch (error) {
+                console.log("Failed to get account balance." + error);
             }
+        } else {
+            console.log("No account on which to get balance");
+            return false;
         }
-    }
+    };
 
     determineAccountBalanceLow = () => {
         const accountBalanceMinimum =
@@ -232,9 +545,14 @@ class DAppWeb3 extends Component {
         ) {
             this.closeLowFundsModal()
 
-            window.toastProvider.addMessage("Received Funds!",{
-                variant:'success',
-                secondaryMessage: "You now have enough ETH"
+            toast.info("You now have enough funds!", {
+                position: "bottom-right",
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
             })
         }
 
@@ -259,27 +577,6 @@ class DAppWeb3 extends Component {
 
     }
 
-
-
-    closeLowFundsModal = e => {
-        if (typeof e !== "undefined") {
-            e.preventDefault();
-        }
-
-        let modals = { ...this.state.modals };
-        modals.data.lowFundsModalIsOpen = false;
-        this.setState({ modals });
-    }
-
-    openLowFundsModal = (e,callback) => {
-        if (typeof e !== "undefined" && e !== null) {
-            e.preventDefault();
-        }
-
-        let modals = { ...this.state.modals };
-        modals.data.lowFundsModalIsOpen = true;
-        this.setState({ modals, callback: callback });
-    }
 
 
 
@@ -339,9 +636,27 @@ class DAppWeb3 extends Component {
             (error,signature) => {
                 if(error) {
                     //User rejected account validation
-
+                    console.log("nije proslo")
                     //RejectValidation
                     this.rejectValidation(error)
+
+                }else {
+                    console.log("proslo")
+                    const successMessage="Connected"
+                    console.log(successMessage,signature)
+                    toast.success("Welcome to the Movement Demo DApp", {
+                        position: "bottom-right",
+                        autoClose: 3000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: false,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    this.closeValidationPendingModal()
+                    this.setState({
+                        accountValidated:true
+                    })
                 }
             }
         )
@@ -372,6 +687,29 @@ class DAppWeb3 extends Component {
     }
 
     // CONNECTION MODAL METHODS
+
+    closeConnectionPendingModal = e => {
+        if (typeof e !== "undefined") {
+            e.preventDefault();
+        }
+
+        let modals = { ...this.state.modals };
+        modals.data.accountConnectionPending = false;
+        this.setState({ modals });
+    };
+
+    openConnectionPendingModal = e => {
+        if (typeof e !== "undefined") {
+            e.preventDefault();
+        }
+
+        let modals = { ...this.state.modals };
+        modals.data.accountConnectionPending = true;
+        modals.data.transactionConnectionModalIsOpen = false;
+        modals.data.connectionModalIsOpen = false;
+
+        this.setState({ modals });
+    };
     closeConnectionModal = e =>{
         if(typeof e !== "undefined"){
             e.preventDefault()
@@ -440,6 +778,95 @@ class DAppWeb3 extends Component {
         this.setState({ modals });
     };
 
+    closeUserRejectedValidationModal = e => {
+        if (typeof e !== "undefined") {
+            e.preventDefault();
+        }
+
+        let modals = { ...this.state.modals };
+        modals.data.userRejectedValidation = false;
+        modals.data.connectionModalIsOpen = false;
+        modals.data.transactionConnectionModalIsOpen = false;
+        this.setState({ modals });
+    };
+
+    openUserRejectedValidationModal = e => {
+        if (typeof e !== "undefined") {
+            e.preventDefault();
+        }
+
+        let modals = { ...this.state.modals };
+        modals.data.userRejectedValidation = true;
+        modals.data.connectionModalIsOpen = false;
+        modals.data.transactionConnectionModalIsOpen = false;
+        this.setState({ modals });
+    };
+
+    closeWrongNetworkModal = e => {
+        if (typeof e !== "undefined") {
+            e.preventDefault();
+        }
+
+        let modals = { ...this.state.modals };
+        modals.data.wrongNetworkModalIsOpen = false;
+        this.setState({ modals });
+    };
+
+    openWrongNetworkModal = e => {
+        if (typeof e !== "undefined") {
+            e.preventDefault();
+        }
+
+        let modals = { ...this.state.modals };
+        modals.data.wrongNetworkModalIsOpen = true;
+        this.setState({ modals });
+    };
+
+
+    closeTransactionConnectionModal = e => {
+        if (typeof e !== "undefined") {
+            e.preventDefault();
+        }
+
+        let modals = { ...this.state.modals };
+        modals.data.transactionConnectionModalIsOpen = false;
+        this.setState({ modals });
+    };
+
+    openTransactionConnectionModal = (e, callback) => {
+        if (typeof e !== "undefined" && e !== null) {
+            e.preventDefault();
+        }
+
+        let modals = { ...this.state.modals };
+        modals.data.transactionConnectionModalIsOpen = true;
+        this.setState({ modals, callback: callback });
+    };
+
+    closeLowFundsModal = e => {
+        if (typeof e !== "undefined") {
+            e.preventDefault();
+        }
+
+        let modals = { ...this.state.modals };
+        modals.data.lowFundsModalIsOpen = false;
+        this.setState({ modals });
+    };
+
+    openLowFundsModal = (e, callback) => {
+        if (typeof e !== "undefined" && e !== null) {
+            e.preventDefault();
+        }
+
+        let modals = { ...this.state.modals };
+        modals.data.lowFundsModalIsOpen = true;
+        this.setState({ modals, callback: callback });
+    };
+
+
+
+
+
     state={
         contract:{},
         account: null,
@@ -457,26 +884,42 @@ class DAppWeb3 extends Component {
             checkNetwork: this.checkNetwork
         },
         modals: {
-            data:{
-                connectionModalIsOpen: false,
+            data: {
+                noWeb3BrowserModalIsOpen: this.noWeb3BrowserModalIsOpen,
+                noWalletModalIsOpen: this.noWalletModalIsOpen,
+                connectionModalIsOpen: null,
+                accountConnectionPending: null,
                 userRejectedConnect: null,
                 accountValidationPending: null,
-                userRejectedValidation:null,
-
+                userRejectedValidation: null,
+                wrongNetworkModalIsOpen: null,
+                transactionConnectionModalIsOpen: null,
+                lowFundsModalIsOpen: null
             },
             methods: {
+                openNoWeb3BrowserModal: this.openNoWeb3BrowserModal,
+                closeNoWeb3BrowserModal: this.closeNoWeb3BrowserModal,
+                openNoWalletModal: this.openNoWalletModal,
+                closeNoWalletModal: this.closeNoWalletModal,
                 closeConnectionModal: this.closeConnectionModal,
                 openConnectionModal: this.openConnectionModal,
-                closeLowFundsModal: this.closeLowFundsModal,
-                openLowFundsModal: this.openLowFundsModal,
+                closeConnectionPendingModal: this.closeConnectionPendingModal,
+                openConnectionPendingModal: this.openConnectionPendingModal,
                 closeUserRejectedConnectionModal: this.closeUserRejectedConnectionModal,
                 openUserRejectedConnectionModal: this.openUserRejectedConnectionModal,
-                openValidationPendingModal: this.openValidationPendingModal,
                 closeValidationPendingModal: this.closeValidationPendingModal,
+                openValidationPendingModal: this.openValidationPendingModal,
                 closeUserRejectedValidationModal: this.closeUserRejectedValidationModal,
                 openUserRejectedValidationModal: this.openUserRejectedValidationModal,
+                closeWrongNetworkModal: this.closeWrongNetworkModal,
+                openWrongNetworkModal: this.openWrongNetworkModal,
+                closeTransactionConnectionModal: this.closeTransactionConnectionModal,
+                openTransactionConnectionModal: this.openTransactionConnectionModal,
+                closeLowFundsModal: this.closeLowFundsModal,
+                openLowFundsModal: this.openLowFundsModal
             }
-        }
+        },
+        users:[]
     }
 
     render() {
@@ -493,6 +936,8 @@ class DAppWeb3 extends Component {
                    network={this.state.network}
                    modals={this.state.modals}
                />
+
+
            </div>
         );
     }
