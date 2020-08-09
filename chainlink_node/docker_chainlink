@@ -1,0 +1,3 @@
+#!/bin/bash
+docker run --net='host' --name chainlink -p 6688:6688 -v ~/.chainlink-kovan:/chainlink -it --env-file=.env  smartcontract/chainlink local n
+

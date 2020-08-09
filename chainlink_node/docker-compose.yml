@@ -1,0 +1,32 @@
+version: '3.0'
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: node1
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: chainlink_db
+    ports:
+    - 5432:5432
+    volumes:
+    - database-data:/var/lib/postgresql/data
+
+  chainlink:
+    image: smartcontract/chainlink
+    container_name: chainlink_node
+    volumes:
+    - ~/node1:/chainlink
+    env_file:
+      - env
+    command: "local n"
+    ports:
+    - 6688:6688
+
+volumes:
+  database-data:
+
+
+
+
+

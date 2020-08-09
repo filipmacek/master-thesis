@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="6c9b1e4f-d557-4243-b920-74523ce2f636" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/install.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../react_dapp/src/utils/ContractMetadata.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../react_dapp/src/utils/panels/RoutesPanel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pi-cluster/backend/config/backend_nginx.conf" beforeDir="false" afterPath="$PROJECT_DIR$/../pi-cluster/backend/config/backend_nginx.conf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pi-cluster/postgres/postgres-deployment.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../pi-cluster/postgres/postgres-deployment.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pi-cluster/scripts/master/install-nfs-server.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../pi-cluster/scripts/master/install-nfs-server.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pi-cluster/scripts/node/install-nfs-client.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../pi-cluster/scripts/node/install-nfs-client.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../react_dapp/bundles/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/bundles/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../react_dapp/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../react_dapp/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../react_dapp/src/components/WalletBlock.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/src/components/WalletBlock.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../react_dapp/src/utils/ConnectionModalsUtil.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/src/utils/ConnectionModalsUtil.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../react_dapp/src/utils/DAppWeb3.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/src/utils/DAppWeb3.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../react_dapp/src/utils/Web3Utils.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../react_dapp/src/utils/components/AccountOverview.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/src/utils/components/AccountOverview.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../react_dapp/src/utils/components/ListUsersModal.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/src/utils/components/ListUsersModal.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../react_dapp/src/utils/components/UserCard.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/src/utils/components/UserCard.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../react_dapp/src/utils/components/UserRejectedValidationModal.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/src/utils/components/UserRejectedValidationModal.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../react_dapp/src/utils/panels/SmartContractPanel.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/src/utils/panels/SmartContractPanel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../react_dapp/src/utils/panels/UsersPanel.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/src/utils/panels/UsersPanel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../react_dapp/webpack-stats.json" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/webpack-stats.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../truffle_movementApp/contracts/Users.sol" beforeDir="false" afterPath="$PROJECT_DIR$/../truffle_movementApp/contracts/Users.sol" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="1focsqISDarpvROjSh9iS7pINLo" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6c9b1e4f-d557-4243-b920-74523ce2f636" name="Default Changelist" comment="" />
+      <created>1596888095700</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1596888095700</updated>
+      <workItem from="1596888096824" duration="3169000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

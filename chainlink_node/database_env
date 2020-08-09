@@ -1,0 +1,5 @@
+USERNAME=node1
+PASSWORD=pass
+SERVER=localhost
+PORT=5432
+DATABASE=chainlink_db
