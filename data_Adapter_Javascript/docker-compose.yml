@@ -1,0 +1,12 @@
+version: '3.0'
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+    - 80:80
+
+  server:
+    build: ./Dockerfile
+    container_name: data_adapter
+    ports:

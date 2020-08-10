@@ -1,0 +1,2 @@
+#!/bin/bash
+solc contracts/Movement.sol --bin --optimize --abi -o bin --overwrite

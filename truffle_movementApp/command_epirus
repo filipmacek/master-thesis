@@ -1,0 +1,2 @@
+#!/bin/bash
+epirus solidity generate -b bin/Movement.bin -a bin/Movement.abi -o ~/Desktop/Movement/app/src/main/java -p com.filipmacek.movement.blockchain
