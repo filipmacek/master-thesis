@@ -27,6 +27,10 @@ sudo echo "/opt/nfs 192.168.1.0/24(rw,all_squash,async,no_subtree_check)" | sudo
 sudo exportfs -ra
 
 
+# Add fstab file
+echo "UUID=\"4E0C74590C743DD1\" /opt/nfs auto nosuid,nodev,nofail,noatime 0 0"
+
+
 #Enable services
 #Enable also nfs-common client on host computer of nfs-server
 sudo systemctl enable nfs-kernel-server

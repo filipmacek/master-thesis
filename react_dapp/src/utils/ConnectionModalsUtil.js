@@ -6,7 +6,7 @@ import ConnectionPendingModal from "./components/ConnectionPendingModal";
 import WrongNetworkModal from "./components/WrongNetworkModal";
 import TransactionConnectionModal from "./components/TransactionConnectionModal";
 import UserRejectedConnectionModal from "./components/UserRejectedConnectionModal";
-import LowFundsModal from "./components/LowFundsModal";
+import ListUsersModal from "./components/ListUsersModal";
 
 
 class ConnectionModalsUtil extends Component {
@@ -61,14 +61,17 @@ class ConnectionModalsUtil extends Component {
                     }
                     isOpen={this.props.modals.data.userRejectedValidation}
                     validateAccount={this.props.validateAccount}
+                    clearAccount={this.props.clearAccount}
                 />
 
-                <LowFundsModal
-                    closeModal={this.props.modals.methods.closeLowFundsModal}
-                    isOpen={this.props.modals.data.lowFundsModalIsOpen}
-                    currentNetwork={this.props.network.current}
+                <ListUsersModal
+                    closeModal={this.props.modals.methods.closeListUserModal}
+                    isOpen={this.props.modals.data.listUserModalIsOpen}
+                    users={this.props.users}
                     account={this.props.account}
+                    contractMethodSendWrapper={this.props.contractMethodSendWrapper}
                 />
+
             </div>
         );
     }

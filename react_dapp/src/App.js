@@ -21,7 +21,7 @@ class App extends Component {
     // Optional Parameter
     config={
         accountBalanceMinimum: 0.001,
-        requiredNetwork: 3
+        requiredNetwork: 5
     }
 
     showRoute = route => {
@@ -29,6 +29,8 @@ class App extends Component {
             route
         })
     }
+
+
 
 
 
@@ -41,12 +43,15 @@ class App extends Component {
                       {({
                           account,
                           accountBalance,
+                          accountBalanceLow,
                           contract,
                           connectAndValidateAccount,
                           accountValidated,
                           web3Fallback,
                           network,
-                          users
+                          users,
+                          contractMethodSendWrapper,
+                          isUserCreated
                         })=>(
                             <Box>
                               <Header/>
@@ -62,7 +67,7 @@ class App extends Component {
                                             <img src="/static/run_icon.png" alt="Movement DApp logo"/>
                                         </Heading.h2>
                                       <Text fontFamily="sansSerif">
-                                            This is Movement DApp. An decentralized application deployed on Ropsten Ethereum blockhain.
+                                            This is Movement DApp. An decentralized application deployed on Rinkeby Ethereum testnet blockhain.
                                             It offers way of communication with smart contracts deployed on blockchain.
                                             Use MetaMask to interact with dapp.
                                       </Text>
@@ -79,10 +84,18 @@ class App extends Component {
                                 <WalletBlock
                                     account={account}
                                     accountBalance={accountBalance}
+                                    accountBalanceLow={accountBalanceLow}
                                     accountValidated={accountValidated}
                                     connectAndValidateAccount={connectAndValidateAccount}
                                     />
-                                   <SmartContractPanel/>
+                                   <SmartContractPanel
+                                       users={users}
+                                       contract={contract}
+                                       account={account}
+                                       contractMethodSendWrapper={contractMethodSendWrapper}
+                                       isUserCreated={isUserCreated}
+
+                                   />
                             </Box>
                       )}
                   </DAppWeb3.Consumer>

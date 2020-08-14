@@ -6,13 +6,13 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import {Box} from "rimble-ui";
+import {Box, Flex} from "rimble-ui";
 import AccessibilityIcon from '@material-ui/icons/Accessibility';
 import GestureIcon from '@material-ui/icons/Gesture';
 import ComputerIcon from "@material-ui/icons/Computer"
 import UsersPanel from "./UsersPanel";
-
-
+import {Star} from '@rimble/icons'
+import RoutesPanel from "./RoutesPanel";
 export default function SmartContractPanel(props) {
    const styles = {
         root: {
@@ -31,10 +31,27 @@ export default function SmartContractPanel(props) {
                         <div className="mr-2">
                             <AccessibilityIcon/>
                         </div>
-                        <Typography className={styles.heading}>Users</Typography>
+                        <Flex flexDirection={'row'}>
+
+                            <Box marginRight="15px">
+                                <Typography className={styles.heading}>User</Typography>
+                            </Box>
+                            <Box>
+                                {props.isUserCreated ?
+                                    <Star color="green"/> : null
+                                }
+                            </Box>
+
+                        </Flex>
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
-                        <UsersPanel contract={props.contract}/>
+                        <UsersPanel
+                            contract={props.contract}
+                            account={props.account}
+                            users={props.users}
+                            contractMethodSendWrapper={props.contractMethodSendWrapper}
+
+                        />
                     </ExpansionPanelDetails>
                 </ExpansionPanel>
                 <ExpansionPanel>
@@ -45,10 +62,7 @@ export default function SmartContractPanel(props) {
                         <Typography className={styles.heading}>Routes</Typography>
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
-                        <Typography>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
-                            sit amet blandit leo lobortis eget.
-                        </Typography>
+                       <RoutesPanel/>
                     </ExpansionPanelDetails>
                 </ExpansionPanel>
                 <ExpansionPanel>

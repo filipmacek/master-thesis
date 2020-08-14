@@ -1,12 +1,31 @@
 version: '3.0'
 services:
-  nginx:
-    image: nginx:latest
+  nginx-proxy:
+    build: ./nginx-docker
     container_name: nginx
     ports:
     - 80:80
 
   server:
-    build: ./Dockerfile
+    build: ./
     container_name: data_adapter
     ports:
+    - 3000:3000
+
+  mongo_db:
+    image: mongo:latest
+    container_name: mongo_db
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: movement
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+    - 27017:27017
+    volumes:
+    - ./mongo-data:/data/db
+    - ./init-mongo-user.js:/docker-entrypoint-initdb.d/init-mongo-user.js:ro
+
+
+volumes:
+  mongo-data:

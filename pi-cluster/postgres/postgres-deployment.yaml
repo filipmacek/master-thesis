@@ -14,6 +14,11 @@ spec:
       labels:
         app: postgres
     spec:
+      # securityContext:
+      #   runAsUser: 999
+      #   supplementalGroups: [999,1000]
+      #   fsGroup: 999
+        
       containers:
         - name: postgres
           image: "arm64v8/postgres"
@@ -24,7 +29,7 @@ spec:
             - configMapRef:
                 name: postgres-env-configmap
           volumeMounts:
-            - mountPath: /var/lib/pgsql/data
+            - mountPath: /var/lib/postgresql/data
               name: pgdata
       volumes:
         - name: pgdata

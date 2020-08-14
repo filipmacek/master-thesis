@@ -57,6 +57,7 @@ contract Movement is ChainlinkClient,Ownable {
 
     // nodes
     event NewNodeAdded(uint nodeId,string name);
+    event NodeDeleted(uint nodeId);
     
 
     
@@ -97,15 +98,35 @@ contract Movement is ChainlinkClient,Ownable {
                 users[i].username=users[users.length-1].username;
                 users[i].password=users[users.length-1].password;
                 users[i].addr=users[users.length-1].addr;
-                break;
+                 users.pop();
+                emit UserDeleted(_username);
+                return true;
             }
         }
-        users.pop();
-        emit UserDeleted(_username);
-        return true;
+       
+        return false;
         
         
     }
+    
+    function deleteNode(uint _nodeId) public returns(bool){
+        require(nodes.length>0);
+        uint len = nodes.length;
+        for(uint i=0;i<len;i++){
+            if(nodes[i].nodeId == _nodeId){
+                nodes[i].nodeId = nodes[len-1].nodeId;
+                nodes[i].nodeName = nodes[len-1].nodeName;
+                nodes[i].ip = nodes[len-1].ip;
+                nodes[i].data_endpoint = nodes[len-1].data_endpoint;
+                nodes[i].oracleContractAddress = nodes[len-1].oracleContractAddress;
+                nodes.pop();
+                emit NodeDeleted(_nodeId);
+                return true;
+            }
+        }
+        return false;
+    }
+    
     
     function compareStrings (string memory a, string memory b) public view returns (bool) {
             return (keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b))) );

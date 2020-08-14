@@ -8,6 +8,12 @@ class UserRejectedValidationModal extends React.Component {
         this.props.validateAccount();
     };
 
+    cancelConnection = () =>{
+        localStorage.clear()
+        this.props.clearAccount()
+        this.props.closeModal()
+    }
+
     renderContent = () => {
         return (
             <React.Fragment>
@@ -21,7 +27,7 @@ class UserRejectedValidationModal extends React.Component {
                 </Text>
 
                 <Flex flexDirection={['column', 'row']} justifyContent={'flex-end'} mt={4}>
-                    <Button.Outline onClick={this.props.closeModal} mr={[0, 3]} mb={[3, 0]}>
+                    <Button.Outline onClick={this.cancelConnection} mr={[0, 3]} mb={[3, 0]}>
                         Cancel connection
                     </Button.Outline>
                     <Button onClick={this.sendMessageAgain}>

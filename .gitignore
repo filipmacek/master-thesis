@@ -3,3 +3,6 @@ envs
 *.jar
 **/.bloop/
 **/.metals/
+node_modules/
+.idea/
+mongo-data/

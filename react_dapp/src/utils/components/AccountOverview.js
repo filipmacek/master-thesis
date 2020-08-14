@@ -4,7 +4,6 @@ import ShortHash from "./ShortHash";
 
 class AccountOverview extends React.Component {
     trimEth = eth => {
-        console.log("ETH ",eth)
         eth = parseFloat(eth);
         eth = eth * 10000;
         eth = Math.round(eth);
@@ -14,9 +13,9 @@ class AccountOverview extends React.Component {
         return eth;
     };
 
+
     render() {
         const roundedBalance = this.trimEth(this.props.accountBalance);
-        console.log("accoutn balance ",this.props.accountBalance)
         return (
             <Flex alignItems={"flex-start"}>
                 <Flex mr={3}>

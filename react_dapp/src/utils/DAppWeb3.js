@@ -1,233 +1,20 @@
-import React, {Component, createElement} from 'react';
-import ReactDOM from 'react-dom'
-import {Web3Utils} from "./Web3Utils";
+import React, {Component} from 'react';
 import Web3 from "web3";
 import ConnectionModalsUtil from "./ConnectionModalsUtil";
-import {toast, ToastContainer} from "react-toastify";
-import SmartContractControl from "./panels/SmartContractPanel";
+import {toast} from "react-toastify";
+import {ContractMetadata} from "./ContractMetadata";
 
 // Address of smart contract
-const contractAddress="0xc9c9c05859D3B2DDAb93628167D7b3d84DaC78f5"
-
+const contractAddress=ContractMetadata.address
 // Contract ABI -got it from remixd
-const abi=[
-    {
-        "inputs": [],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "index",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "string",
-                "name": "username",
-                "type": "string"
-            },
-            {
-                "indexed": false,
-                "internalType": "address",
-                "name": "addr",
-                "type": "address"
-            }
-        ],
-        "name": "NewUserCreated",
-        "type": "event"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "string",
-                "name": "_username",
-                "type": "string"
-            },
-            {
-                "internalType": "string",
-                "name": "_password",
-                "type": "string"
-            }
-        ],
-        "name": "addUser",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "index",
-                "type": "uint256"
-            }
-        ],
-        "name": "getAddress",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "index",
-                "type": "uint256"
-            }
-        ],
-        "name": "getPassword",
-        "outputs": [
-            {
-                "internalType": "string",
-                "name": "",
-                "type": "string"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "index",
-                "type": "uint256"
-            }
-        ],
-        "name": "getUsername",
-        "outputs": [
-            {
-                "internalType": "string",
-                "name": "",
-                "type": "string"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "getUsersCount",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "string",
-                "name": "_username",
-                "type": "string"
-            }
-        ],
-        "name": "isUser",
-        "outputs": [
-            {
-                "internalType": "bool",
-                "name": "",
-                "type": "bool"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "users",
-        "outputs": [
-            {
-                "internalType": "string",
-                "name": "username",
-                "type": "string"
-            },
-            {
-                "internalType": "string",
-                "name": "password",
-                "type": "string"
-            },
-            {
-                "internalType": "address",
-                "name": "addr",
-                "type": "address"
-            },
-            {
-                "internalType": "bool",
-                "name": "isExist",
-                "type": "bool"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "string",
-                "name": "",
-                "type": "string"
-            }
-        ],
-        "name": "usersByUsername",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "usersCount",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    }
-]
-
+const abi=ContractMetadata.abi
 
 
 const DAppTransactionContext= React.createContext({
     contract:{},
     account:{},
     accountBalance:{},
+    accountBalanceLow:{},
     web3:{},
     initWeb3: ()=>{},
     validateAccount: ()=>{},
@@ -235,6 +22,7 @@ const DAppTransactionContext= React.createContext({
     initContract: ()=>{},
     initAccount: ()=>{},
     connectAndValidateAccount: ()=>{},
+    contractMethodSendWrapper: ()=>{},
     network: {
         required: {},
         current: {},
@@ -252,7 +40,7 @@ const DAppTransactionContext= React.createContext({
             userRejectedValidation: {},
             wrongNetworkModalIsOpen: {},
             transactionConnectionModalIsOpen: {},
-            lowFundsModalIsOpen: {}
+            listUserModalIsOpen: {}
         },
         methods: {
             openNoWeb3BrowserModal: () => {},
@@ -269,18 +57,13 @@ const DAppTransactionContext= React.createContext({
             openWrongNetworkModal: () => {},
             closeTransactionConnectionModal: () => {},
             openTransactionConnectionModal: () => {},
-            closeLowFundsModal: () => {},
-            openLowFundsModal: () => {}
+            openListUserModal: ()=>{},
+            closeListUserModal: ()=>{}
         }
     },
-    transaction: {
-        data: {
-            transactions: {}
-        },
-        meta:{},
-        methods:{}
-    },
-    users:[]
+    transaction: {},
+    users:[],
+    isUserCreated:{}
 
 })
 
@@ -293,8 +76,70 @@ class DAppWeb3 extends Component {
 
     componentDidMount() {
         this.initWeb3()
+        this.checkIfWalletExists()
+        this.setupIntervals()
 
     }
+
+    setupIntervals= () => {
+        let accountChange=setInterval(()=>{
+            const localAccount=this.state.account
+            const globalAccount=window.web3.eth.accounts[0]
+            if(localAccount == null) {
+                return;
+            }
+            if(globalAccount !== localAccount){
+                // Clear storage if wallet is remembered
+                if(this.state.rememberWallet){
+                    localStorage.clear()
+                    this.setState({
+                        account:null,
+                        accountValidated:null,
+                        rememberWallet:null,
+                        isUserCreated:false
+                    })
+                }
+
+
+            }
+
+        },1000)
+
+        let accountBalanceChange=setInterval(()=>{
+            let account = this.state.account
+            if(account === null){return;}
+            if(this.state.modals.data.accountConnectionPending ||
+                    this.state.modals.data.accountValidationPending
+                ) {
+                    return
+                }
+                if(window.ethereum.isConnected()){
+
+                    // If account balance changed, that means you got some funds
+                    this.getAccountBalance(account)
+                }else {
+                    console.log("Not connected wallet")
+                }
+
+        },1000)
+    }
+
+
+    checkIfWalletExists = () => {
+
+        if(localStorage.getItem('account') === null){
+            // account is not remembered
+            return;
+        }else{
+            let accountFromStorage=localStorage.getItem("account")
+            let accountValidatedFromStorage=localStorage.getItem('accountValidated')
+            this.setState({
+                account: accountFromStorage,
+                accountValidated: accountValidatedFromStorage
+            })
+        }
+    }
+
     getRequiredNetwork=() => {
         const networkId =
             typeof this.props.config !== "undefined" &&
@@ -357,23 +202,27 @@ class DAppWeb3 extends Component {
         // try metamask connect method
         if(window.ethereum){
             // Request Account Access
-
             try{
                 await window.ethereum.enable().then(wallets =>{
                     const account= wallets[0]
                     this.closeConnectionPendingModal()
-                    this.setState({account})
-                    console.log("Wallet address ",this.state.account)
+                    this.setState({account},()=> {
+                        console.log("Wallet address ", this.state.account)
 
-                    //After Account is completed, get balance
-                    this.getAccountBalance(account)
+                        // If rememberWallet is true save account to local storage
+                        if (this.state.rememberWallet) {
+                            console.log("Putting account in local storage")
+                            localStorage.setItem('account',account)
+                        }
 
-                    // Init contract
-                    this.initContract()
+                        //After Account is completed, get balance
+                        this.getAccountBalance(account)
 
+                        // Check if user is already create
+                        this.checkIfUserCreated()
+                    })
                     //watch for account change
-                    this.pullAccountChange()
-
+                    // this.pullAccountChange()
                 })
             }catch (e) {
                // user denied access
@@ -385,14 +234,24 @@ class DAppWeb3 extends Component {
         }
     }
 
+    checkIfUserCreated = () =>{
+        const userExists=this.state.users.find(user =>user.address.toLowerCase()===this.state.account.toLowerCase())
+        if(userExists !== undefined){
+            console.log("User is already created")
+            this.setState({isUserCreated:true})
+        }
+    }
+
     initContract= async () => {
         console.log("Connecting and syncing with smart contract")
 
         try {
             const contract = await new this.state.web3.eth.Contract(abi,contractAddress)
-            this.setState({contract})
+
             console.log("Connected with contract")
-            console.log(contract)
+            this.setState({contract},()=>{
+                this.fetchUsers()
+            })
         } catch (e) {
            console.log("Could not create contract.")
            toast.error("Contract creation failed",{
@@ -409,25 +268,22 @@ class DAppWeb3 extends Component {
     }
 
     fetchUsers = () =>{
-        console.log("getting users")
+        console.log("Fetching users")
+        let users=[]
 
         try {
             this.state.contract.methods.getUsersCount().call().then(value => {
                 console.log("Users count: ", value)
-                this.setState({
-                    users:[]
-                })
+                // Init users so its always empty
+
                 var i;
-                let promise1,promise2,promise3;
-                for(i=1;i <=value;i++) {
-                    console.log("i ", i)
+                let promise1,promise3;
+                for(i=0;i <value;i++) {
                     promise1 = this.state.contract.methods.getUsername(i).call()
-                    promise2 = this.state.contract.methods.getPassword(i).call()
+                    // promise2 = this.state.contract.methods.getPassword(i).call()
                     promise3 = this.state.contract.methods.getAddress(i).call()
-                    Promise.all([promise1, promise2, promise3]).then(result => {
-                        this.setState(prevState => ({
-                            users: [...prevState.users, {username: result[0], password: result[1], address: result[2]}]
-                        }))
+                    Promise.all([promise1,  promise3]).then(result => {
+                        users.push({username: result[0], address: result[1]})
                     })
                 }
             }).catch(error => {
@@ -437,55 +293,266 @@ class DAppWeb3 extends Component {
             console.log("error getting users with 2",e)
         }
 
+        // Subscribe to any new users created event when site loaded
+        // so your users are always updated
+        this.state.contract.events.NewUserCreated()
+            .on("connected",function (subscriptionId) {console.log("SubscriptionId  ",subscriptionId)})
+            .on("data",(event)=> {
+                console.log("Event - New user created",event)
+                console.log(this.state.users)
+
+            })
+
+        this.setState({users:users},()=>{
+            console.log("Callback from fetch users ",this.state.users)
+
+        })
+
+    }
+
+
+    contractMethodSendWrapper = (contractMethod,value) => {
+        // If Network is not valid
+        if (this.state.network.current.id !== this.state.network.required.id) {
+            alert("Please switch to right network. Use Rinkeby.")
+            return;
+        }
+
+        // If your are not connected with wallet
+        if (!this.state.account) {
+            alert("Please connect with your wallet to send transactions")
+            return;
+        }
+
+        // Is there enough funds in wallet
+        if(this.state.accountBalanceLow){
+            alert("You dont have enough funds to send transaction. Fund your account with ETH.")
+            return;
+        }
+
+        // Is contract loaded
+        if(!this.state.contract){
+            alert("Contract is not loaded")
+            return;
+        }
+
+         // Create transaction object
+        let transaction = this.createTransaction()
+        this.addTransaction(transaction)
+
+        // Add metadata to transaction
+        transaction.method=contractMethod
+        transaction.type="contract"
+        transaction.status="started"
+
+
+
+        this.updateTransaction(transaction)
+
+        const {contract,account}= this.state
+
+
+        if(contractMethod === 'addUser') {
+            this.contractAddUser(contract, account, transaction, value)
+        }else if (contractMethod === "deleteUser") {
+            this.contractDeleteUser(contract,account,transaction,value)
+        }
+
+
+        // Network and account are connected,its OK to send transaction
 
 
     }
 
-    fetchRoutes = () =>{
+    contractDeleteUser =(contract,account,transaction,value) => {
+        try {
+            contract.methods.deleteUser(value.username).send({
+                from:account,
+            })
+                .on("transactionHash",hash =>{
+                    console.log("Hash ",hash)
+                    // Transaction is submitted to block and you received transaction hash
+
+                    //Toast Transaction Created
+                    toast.info('Transaction created', {
+                        position: "bottom-right",
+                        autoClose: 3000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: false,
+                        draggable: true,
+                        progress: true,
+                    });
+
+                    transaction.hash = hash
+                    transaction.status = "pending"
+                    transaction.recentEvent="transactionHash"
+                    this.updateTransaction(transaction)
+                })
+                .on("confirmation",(confirmationNumber,receipt) =>{
+                    console.log("ConfirmationNUmber",confirmationNumber)
+                    console.log("Receipt",receipt)
+                    // Update confirmation count on each subsequent confirmation
+                    transaction.confirmationCount+=1
+
+                    // How many confirmations should be received before informing the user
+                    const confidenceThreshold = 3
+
+                    if(transaction.confirmationCount ===1 ){
+                        // Initial confimation receipt
+                        transaction.status="confirmed"
+                    }else if (transaction.confirmationCount < confidenceThreshold) {
+                        // Not enough confirmation
+                    }else if( transaction.confirmationCount === confidenceThreshold) {
+                        // Confirmation match threshold
+                        // Check the status from result
+                        if(receipt.status) {
+                            transaction.status = "success"
+                        }else if(!receipt.status){
+                            transaction.status="error"
+                        }
+
+                    }else if(transaction.confirmationCount > confidenceThreshold) {
+
+                    }
+                    // Update transaction with receipt details
+                    transaction.recentEvent="confirmation"
+                    this.updateTransaction(transaction)
+
+                })
+                .on("receipt",receipt => {
+                    // Received receipt
+                    console.log("Receipt")
+                    transaction.recentEvent = 'receipt'
+                    this.updateTransaction(transaction)
+
+                })
+                .on("error",error => {
+                    console.log("Errorrrr ",error)
+                    transaction.status = 'error'
+                    transaction.recentEvent='error'
+                    this.updateTransaction(transaction)
+
+                })
+
+        } catch (e) {
+            transaction.status = "error"
+            this.updateTransaction(transaction)
+            console.log("Error sending transaction ",transaction)
+
+        }
+
+
+    }
+    contractAddUser = (contract,account,transaction,value) =>{
+
+        try {
+            contract.methods.addUser(value.username,value.password).send({
+                from:account,
+            })
+                .on("transactionHash",hash =>{
+                    console.log("Hash ",hash)
+
+                    //Toast Transaction Created
+                    toast.info('Transaction created', {
+                        position: "bottom-right",
+                        autoClose: 3000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: false,
+                        draggable: true,
+                        progress: true,
+                    });
+
+
+
+                    // Transaction is submitted to block and you received transaction hash
+                    transaction.hash = hash
+                    transaction.status = "pending"
+                    transaction.recentEvent="transactionHash"
+                    this.updateTransaction(transaction)
+                })
+                .on("confirmation",(confirmationNumber,receipt) =>{
+                    console.log("ConfirmationNUmber",confirmationNumber)
+                    console.log("Receipt",receipt)
+                    // Update confirmation count on each subsequent confirmation
+                    transaction.confirmationCount+=1
+
+                    // How many confirmations should be received before informing the user
+                    const confidenceThreshold = 3
+
+                    if(transaction.confirmationCount ===1 ){
+                        // Initial confimation receipt
+                        transaction.status="confirmed"
+                    }else if (transaction.confirmationCount < confidenceThreshold) {
+                        // Not enough confirmation
+                    }else if( transaction.confirmationCount === confidenceThreshold) {
+                        // Confirmation match threshold
+                        // Check the status from result
+                        if(receipt.status) {
+                            transaction.status = "success"
+                        }else if(!receipt.status){
+                            transaction.status="error"
+                        }
+
+                    }else if(transaction.confirmationCount > confidenceThreshold) {
+
+                    }
+                    // Update transaction with receipt details
+                    transaction.recentEvent="confirmation"
+                    this.updateTransaction(transaction)
+
+                })
+                .on("receipt",receipt => {
+                    // Received receipt
+                    console.log("Receipt")
+                    transaction.recentEvent = 'receipt'
+                    this.updateTransaction(transaction)
+
+                })
+                .on("error",error => {
+                    console.log("Errorrrr ",error)
+                    transaction.status = 'error'
+                    transaction.recentEvent='error'
+                    this.updateTransaction(transaction)
+
+                })
+
+        } catch (e) {
+            transaction.status = "error"
+            this.updateTransaction(transaction)
+            console.log("Error sending transaction ",transaction)
+
+        }
+
+
 
     }
 
-    fetchNodes= () => {
+    addTransaction = (transaction) => {
+        let transactions = {...this.state.transactions}
+        console.log("Adding transaction ",transaction)
+        transactions[`${transaction.created}`]=transaction
+        this.setState({transactions})
+    }
+
+    updateTransaction =(updatedTransaction) => {
+        let transactions={...this.state.transactions}
+        let transaction = {...updatedTransaction}
+        transaction.lastUpdated=Date.now()
+        transactions[`${transaction.created}`] = transaction
+        this.setState({transactions})
 
     }
 
+    createTransaction = () => {
+        let transaction={}
+        transaction.created=Date.now()
+        transaction.lastUpdated=Date.now()
+        transaction.status='initialized'
+        transaction.confirmationCount=0
+        return transaction
 
-    pullAccountChange = () => {
-        let account = this.state.account
-        let requiresUpdate=false
-        let accountInterval = setInterval(()=>{
-            // account is currently pending and validating
-            if(
-                this.state.modals.data.accountConnectionPending ||
-                this.state.modals.data.accountValidationPending
-            ) {
-                return
-            }
-            if(window.ethereum.isConnected()){
-                const updatedAccount= window.web3.eth.accounts[0]
-                if(updatedAccount.toLowerCase() !== account.toLowerCase()){
-                    requiresUpdate=true
-                }
-
-                // If account balance changed, that means you got some funds
-                this.getAccountBalance()
-
-
-                if(requiresUpdate){
-                    clearInterval(accountInterval)
-                    let modals=this.state.modals
-                    modals.data.userRejectedConnecd=null
-                    this.setState({
-                        modals: modals,
-                        account: "",
-                        accountValidated:null,
-                        transactions:[]
-                    },()=>{
-                        this.initAccount()
-                    })
-                }
-            }
-        },1000)
     }
 
     rejectAccountConnect = error => {
@@ -531,34 +598,16 @@ class DAppWeb3 extends Component {
     determineAccountBalanceLow = () => {
         const accountBalanceMinimum =
             typeof this.props.config !== "undefined" &&
-            typeof this.props.accountBalanceMinimum ? this.props.accountBalanceMinimum : 1
+            typeof this.props.config.accountBalanceMinimum ? this.props.config.accountBalanceMinimum : 1
 
         //check if account balance is low
         const accountBalanceLow =
             this.state.accountBalance < accountBalanceMinimum
-
         this.setState({accountBalanceLow})
-
-        if(
-            accountBalanceLow ===false &&
-            this.state.modals.data.lowFundsModalIsOpen
-        ) {
-            this.closeLowFundsModal()
-
-            toast.info("You now have enough funds!", {
-                position: "bottom-right",
-                autoClose: 3000,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: true,
-                progress: undefined,
-            })
-        }
 
     }
 
-    connectAndValidateAccount= callback =>{
+    connectAndValidateAccount= (rememberWallet,callback) =>{
         // If MetaMask is not valid or active
         if(!this.state.web3){
             alert("Please install MetaMask and connect to you wallet to use this DApp")
@@ -567,12 +616,14 @@ class DAppWeb3 extends Component {
 
         // If Network is not valid
         if(this.state.network.current.id !== this.state.network.required.id){
-            alert("Please switch to right network. Use Ropsten.")
+            alert("Please switch to right network. Use Rinkeby.")
             return;
         }
 
         if(!this.state.account || this.state.accountValidated) {
-            this.openConnectionModal()
+            this.setState({rememberWallet},() =>{
+                this.openConnectionModal()
+            })
         }
 
     }
@@ -637,11 +688,18 @@ class DAppWeb3 extends Component {
                 if(error) {
                     //User rejected account validation
                     console.log("nije proslo")
+
+                    // If user wants to remember wallet and is rejecting validation
+                    if(this.state.rememberWallet){
+                        localStorage.setItem('accountValidated',false)
+                    }
+
+
                     //RejectValidation
                     this.rejectValidation(error)
 
                 }else {
-                    console.log("proslo")
+                    console.log("Account has been validated: ",this.state.account)
                     const successMessage="Connected"
                     console.log(successMessage,signature)
                     toast.success("Welcome to the Movement Demo DApp", {
@@ -657,6 +715,13 @@ class DAppWeb3 extends Component {
                     this.setState({
                         accountValidated:true
                     })
+
+                    if(this.state.rememberWallet){
+                        console.log("Validating account from local storage that user accepted")
+
+                        localStorage.setItem('accountValidated',true)
+                    }
+
                 }
             }
         )
@@ -670,18 +735,27 @@ class DAppWeb3 extends Component {
     rejectValidation = error => {
         let modals = {...this.state.modals}
         modals.data.userRejectedValidation=true
+        this.closeValidationPendingModal()
+        this.setState({modals})
     }
 
     checkNetwork = async () => {
         this.getRequiredNetwork()
         await this.getNetworkId()
         await this.getNetworkName()
+        console.log("Network ",this.state.network)
 
         // Validate for required network
         let network = {...this.state.network}
         network.isCorrectNetwork =
             this.state.network.current.id === this.state.network.required.id;
-        this.setState({network})
+        this.setState({network},()=>{
+            // if correct network init Contract
+            if(this.state.network.isCorrectNetwork){
+                this.initContract()
+            }
+
+        })
 
 
     }
@@ -843,26 +917,35 @@ class DAppWeb3 extends Component {
         this.setState({ modals, callback: callback });
     };
 
-    closeLowFundsModal = e => {
-        if (typeof e !== "undefined") {
-            e.preventDefault();
+
+
+
+
+    closeListUserModal = (e) =>{
+
+        if (typeof e !== "undefined"){
+            e.preventDefault()
         }
 
-        let modals = { ...this.state.modals };
-        modals.data.lowFundsModalIsOpen = false;
-        this.setState({ modals });
-    };
+        let modals = {...this.state.modals}
+        modals.data.listUserModalIsOpen=false
+        this.setState({modals})
+    }
 
-    openLowFundsModal = (e, callback) => {
-        if (typeof e !== "undefined" && e !== null) {
-            e.preventDefault();
+
+    openListUserModal = (e) =>{
+
+        if (typeof e !== "undefined"){
+            e.preventDefault()
         }
 
-        let modals = { ...this.state.modals };
-        modals.data.lowFundsModalIsOpen = true;
-        this.setState({ modals, callback: callback });
-    };
-
+        let modals = {...this.state.modals}
+        modals.data.listUserModalIsOpen=true
+        this.setState({modals})
+    }
+    clearAccount=()=>{
+        this.setState({account:null})
+    }
 
 
 
@@ -871,12 +954,14 @@ class DAppWeb3 extends Component {
         contract:{},
         account: null,
         accountBalance: null,
-        accountBalanceMinimum:null,
+        accountBalanceLow:null,
+        rememberWallet: null,
         web3: null,
         web3Fallback: null,
         validateAccount: this.validateAccount,
         accountValidated:null,
         connectAndValidateAccount: this.connectAndValidateAccount,
+        contractMethodSendWrapper: this.contractMethodSendWrapper,
         network:{
             required:{},
             current:{},
@@ -894,7 +979,8 @@ class DAppWeb3 extends Component {
                 userRejectedValidation: null,
                 wrongNetworkModalIsOpen: null,
                 transactionConnectionModalIsOpen: null,
-                lowFundsModalIsOpen: null
+                listUserModalIsOpen:null,
+                userSubmitModalIsOpen:null
             },
             methods: {
                 openNoWeb3BrowserModal: this.openNoWeb3BrowserModal,
@@ -915,11 +1001,13 @@ class DAppWeb3 extends Component {
                 openWrongNetworkModal: this.openWrongNetworkModal,
                 closeTransactionConnectionModal: this.closeTransactionConnectionModal,
                 openTransactionConnectionModal: this.openTransactionConnectionModal,
-                closeLowFundsModal: this.closeLowFundsModal,
-                openLowFundsModal: this.openLowFundsModal
+                closeListUserModal: this.closeListUserModal,
+                openListUserModal: this.openListUserModal
             }
         },
-        users:[]
+        users:[],
+        transactions:{},
+        isUserCreated:false
     }
 
     render() {
@@ -935,6 +1023,9 @@ class DAppWeb3 extends Component {
                    accountValidated={this.state.accountValidated}
                    network={this.state.network}
                    modals={this.state.modals}
+                   users={this.state.users}
+                   contractMethodSendWrapper={this.contractMethodSendWrapper}
+                   clearAccount={this.clearAccount}
                />
 
 

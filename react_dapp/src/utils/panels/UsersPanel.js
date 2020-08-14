@@ -1,31 +1,38 @@
-import {Button, Col, Container, Form, Row} from "react-bootstrap";
+import {Button, Col, Container, Form, Row,FormControl} from "react-bootstrap";
 import React from "react";
 import DAppWeb3 from "../DAppWeb3";
+import {Box} from "rimble-ui";
+
+
+
 
 class UsersPanel extends React.Component {
     state={
         contract:{},
         users:[],
-        usersCount:0,
+        username:null,
+        address:null,
+        isAccountCreate:false
     }
 
 
 
 
-    getUsers =  () => {
 
-        console.log(this.state.users)
-
-
-
-
+    submitUser = ()=>{
+        console.log("Submitting user")
+        this.props.contractMethodSendWrapper("addUser",
+            {
+                username: this.state.username,
+                password: this.state.password,
+                address: this.state.address })
 
     }
 
-    submitUser = () => {
-        alert("Submitin user to Ropsten")
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        // this.setState({users:this.props.users})
+        // if(this.state.)
     }
-
 
 
     render() {
@@ -33,29 +40,33 @@ class UsersPanel extends React.Component {
             <DAppWeb3.Consumer>
                 {({
                     account,
-                    contract,users
+                    contract,
+                      users,
+                    modals,
+                    isUserCreated
                   })=>(
-                        <div>
+                    (isUserCreated ? <p>User is created</p>:
+                        <Box maxWidth={'640px'} mx={'auto'} p={3} mt={2}>
 
                             <Container>
                                 <Form.Group style={{marginright: '70px', width: '300px'}}>
-                                    <Form.Label>Username</Form.Label>
-                                    <Form.Control/>
+                                    <Form.Label >Username</Form.Label>
+                                    <FormControl  onChange={e=>this.setState({username: e.target.value})} type="text"/>
                                 </Form.Group>
                             </Container>
                             <Container>
                                 <Form.Group style={{marginright: '70px', width: '300px'}}>
                                     <Form.Label>Password</Form.Label>
-                                    <Form.Control/>
+                                    <FormControl onChange={e=>this.setState({password: e.target.value})} type="text"/>
                                     <small classname="text-muted form-text">Your password will be hashed for protection</small>
                                 </Form.Group>
                             </Container>
 
 
                             <Container>
-                                        <Form.Group style={{width:'450px'}}>
+                                        <Form.Group style={{width:'320px'}}>
                                             <Form.Label>Address</Form.Label>
-                                            <Form.Control value={account} id="address"/>
+                                            <FormControl value={account}  onChange={e=>this.setState({address: e.target.value})} type="text"/>
                                             <small classname="text-mutex form-text">It's best to use this wallet address as your
                                                 account's address</small>
                                         </Form.Group>
@@ -66,18 +77,15 @@ class UsersPanel extends React.Component {
                                         <Button variant="primary" type="Button" onClick={this.submitUser}>Submit</Button>
                                     </Col>
                                     <Col>
-                                        <Button variant="secondary" type="Button" onClick={this.getUsers}>List users</Button>
+                                        <Button variant="secondary" type="Button" onClick={modals.methods.openListUserModal}>List users</Button>
                                     </Col>
                                 </Row>
                             </Container>
 
-                            <h1>Users</h1>
-                            {this.state.users.forEach(user =>{
-                                return <p>Username: {user.username}  Password: {user.password}  Address: {user.address}</p>
-                            })}
 
 
-                        </div>
+                        </Box>
+                    )
 
                 )}
             </DAppWeb3.Consumer>

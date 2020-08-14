@@ -1,13 +1,17 @@
 import React, {Component} from 'react';
-import {Card,Text,Button} from "rimble-ui";
+import {Card, Text, Button, Flex,Box,Checkbox} from "rimble-ui";
 
 import AccountOverview from "../utils/components/AccountOverview";
 
 class WalletBlock extends Component {
+    state = {
+        rememberWallet:false
+    }
+
 
 
     handleConnectAccount = () => {
-        this.props.connectAndValidateAccount(result =>{
+        this.props.connectAndValidateAccount(this.state.rememberWallet,result =>{
             if(result ==='success'){
                 console.log("Callback SUCCESS")
             }else if (result === "error"){
@@ -27,9 +31,19 @@ class WalletBlock extends Component {
             )
         }else {
             return (
-                <Button onClick={this.handleConnectAccount} width={1}>
-                    Connect your wallet
-                </Button>
+                <Flex flexDirection={"row"}>
+                    <Box width={2/7}>
+                        <Checkbox label="Remember me" required={true}
+                                  checked = {this.state.rememberWallet}
+                                  onChange={ e=> this.setState({rememberWallet: e.target.checked})}
+                        />
+                    </Box>
+                    <Box width={5/7}>
+                        <Button onClick={this.handleConnectAccount} width={1}>
+                            Connect your wallet
+                        </Button>
+                    </Box>
+                </Flex>
             )
         }
     }

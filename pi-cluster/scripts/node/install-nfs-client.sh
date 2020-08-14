@@ -17,4 +17,4 @@ sudo sed -i "s/nogroup/pi/g" /etc/idmapd.conf
 sudo mount 192.168.1.5:/opt/nfs /mnt
 
 #Edit fstab to mount on boot
-sudo echo "192.168.1.5:/opt/nfs /mnt nfs rw 0 0" >> /etc/fstab
+sudo echo "192.168.1.5:/opt/nfs /mnt/nfs nfs rw 0 0" >> /etc/fstab
