@@ -20,29 +20,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6c9b1e4f-d557-4243-b920-74523ce2f636" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/install.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../react_dapp/src/utils/ContractMetadata.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../react_dapp/src/utils/panels/RoutesPanel.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../pi-cluster/backend/config/backend_nginx.conf" beforeDir="false" afterPath="$PROJECT_DIR$/../pi-cluster/backend/config/backend_nginx.conf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../pi-cluster/postgres/postgres-deployment.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../pi-cluster/postgres/postgres-deployment.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../pi-cluster/scripts/master/install-nfs-server.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../pi-cluster/scripts/master/install-nfs-server.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../pi-cluster/scripts/node/install-nfs-client.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../pi-cluster/scripts/node/install-nfs-client.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../react_dapp/bundles/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/bundles/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../react_dapp/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../react_dapp/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../react_dapp/src/components/WalletBlock.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/src/components/WalletBlock.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../react_dapp/src/utils/ConnectionModalsUtil.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/src/utils/ConnectionModalsUtil.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../react_dapp/src/utils/DAppWeb3.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/src/utils/DAppWeb3.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../react_dapp/src/utils/Web3Utils.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../react_dapp/src/utils/components/AccountOverview.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/src/utils/components/AccountOverview.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../react_dapp/src/utils/components/ListUsersModal.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/src/utils/components/ListUsersModal.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../react_dapp/src/utils/components/UserCard.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/src/utils/components/UserCard.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../react_dapp/src/utils/components/UserRejectedValidationModal.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/src/utils/components/UserRejectedValidationModal.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../react_dapp/src/utils/panels/SmartContractPanel.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/src/utils/panels/SmartContractPanel.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../react_dapp/src/utils/panels/UsersPanel.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/src/utils/panels/UsersPanel.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../react_dapp/webpack-stats.json" beforeDir="false" afterPath="$PROJECT_DIR$/../react_dapp/webpack-stats.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../truffle_movementApp/contracts/Users.sol" beforeDir="false" afterPath="$PROJECT_DIR$/../truffle_movementApp/contracts/Users.sol" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/chainlink_kovan/env" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/json_specs/test_spec.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/restart_all.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker_chainlink" beforeDir="false" afterPath="$PROJECT_DIR$/docker_chainlink" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../truffle_movementApp/contracts/Movement.sol" beforeDir="false" afterPath="$PROJECT_DIR$/../truffle_movementApp/contracts/Movement.sol" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,6 +55,7 @@
       <option name="presentableId" value="Default" />
       <updated>1596888095700</updated>
       <workItem from="1596888096824" duration="3169000" />
+      <workItem from="1597501983392" duration="1995000" />
     </task>
     <servers />
   </component>
@@ -88,5 +72,16 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="2633" y="415" width="555" height="403" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1597504825967">
+      <screen x="1920" y="0" width="1920" height="1200" />
+    </state>
+    <state x="2633" y="415" width="555" height="403" key="#com.intellij.fileTypes.FileTypeChooser/1920.0.1920.1200/0.27.1920.1053@1920.0.1920.1200" timestamp="1597504825967" />
+    <state x="2582" y="305" width="658" height="623" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1597504876198">
+      <screen x="1920" y="0" width="1920" height="1200" />
+    </state>
+    <state x="2582" y="305" width="658" height="623" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/1920.0.1920.1200/0.27.1920.1053@1920.0.1920.1200" timestamp="1597504876198" />
   </component>
 </project>

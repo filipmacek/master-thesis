@@ -7,12 +7,28 @@ import "./lib/ChainlinkClient.sol";
 
 contract Movement is ChainlinkClient,Ownable {
     
+    // Global config
+    // Agent is entity who is recording and listening on our android app for user UI event
+    // He is not responsible for knowing is user completed the route or any data related to route
+    // He only record on blockchain UI events that happend
+    // He assign Chainlink nodes with responsibilty for data extraction,filtering,mining coordinates data
+    address private agent;
+    
+    uint constant private ORACLE_PAYMENT = 1 *LINK;
+    address constant LINK_TOKEN_ADDRESS =0xa36085F69e2889c224210F603D836748e7dC0088;
+                                         
     struct User {
+        uint userId;
         string username;
         string password;
         address addr;
         bool isExist;
+        uint routesStarted;
+        uint routesFinished;
+        uint routesCompleted;
     }
+    // mapping from user address to userId
+    mapping(address =>bool) userExistsByAddress;
     
     struct Route {
         uint routeId;
@@ -23,6 +39,28 @@ contract Movement is ChainlinkClient,Ownable {
         bool isStarted;
         bool isFinished;
     }
+    
+    struct RouteStartEvent{
+        uint routeStartId;
+        uint routeId;  // which route
+        string username;    // who started this route
+        uint timestamp;   // when the event has been published
+        uint[] nodes; // which nodes started the route
+    }
+    
+    struct RouteEndEvent{
+        uint routeEndId;
+        uint routeStartId;  // link to proper RouteStartEvent
+        uint timestamp;     // when the event has been published
+        uint dataPoints;    // how many coordinate data points the app recorded
+        uint[] nodesDataReceived;   // of that dataPoints record how many points each node recored
+        uint user_status;  // state in which route finished - did user cancel route, or sumbited it 
+        
+    }
+    
+    // Constants related to states that can happen with started route
+     uint constant USER_CANCELED = 1;
+     uint constant USER_SUBMITED_ROUTE = 2;
     
     struct Node {
         uint nodeId;
@@ -41,6 +79,28 @@ contract Movement is ChainlinkClient,Ownable {
     
     // Nodes array
     Node[] public nodes;
+    
+    // Route start event
+    RouteStartEvent[] routeStartEvents;
+    
+    // Route end events
+    RouteEndEvent[] routeEndEvents;
+    
+    
+    constructor(address _agent)public Ownable(){
+        agent = _agent;
+        //sets the stored address for LINK token and initializes proper interface for LINK so we can send and receive tokens
+        setChainlinkToken(LINK_TOKEN_ADDRESS);
+        
+        // init madin User
+        addUser("Madin","pass");
+        
+        // init route 
+        addRoute("45.812806, 15.997851","45.812279, 15.996553");
+        
+        // init node Koala
+        addNode("Koala","52.201.220.65","api",0xa5CB721FC436796b22D322cc2eC2DBc562C3C67e);
+    }
 
 
     // User events
@@ -54,6 +114,8 @@ contract Movement is ChainlinkClient,Ownable {
     event RouteStarted(uint routeId);
     
     event RouteFinished(uint routeId);
+    
+    event RouteStatusFulfilled(bytes32 indexed requestId,bool status);
 
     // nodes
     event NewNodeAdded(uint nodeId,string name);
@@ -62,7 +124,8 @@ contract Movement is ChainlinkClient,Ownable {
 
     
     function addUser(string memory _username, string memory _password) public {
-        users.push(User(_username,_password,msg.sender,true));
+        users.push(User(users.length+1,_username,_password,msg.sender,true,0,0,0));
+        userExistsByAddress[msg.sender] = true;
         emit NewUserCreated(users.length,_username,msg.sender);
     }
     
@@ -83,10 +146,68 @@ contract Movement is ChainlinkClient,Ownable {
     function getRoutesCount() public view returns(uint) {
         return routes.length;
     }
+    
     function getNodesCount()public view returns(uint){
         return nodes.length;
+    
     }
     
+    // Agents functions
+    function startRouteEvent(uint _routeId,string memory _username,uint[] memory _nodes) public onlyAgent{
+        // require that user is registerd and exists
+        require(userExistsByAddress[msg.sender]);
+        
+        // Change route status
+        // Dont forget to add -1 because its index of array
+        routes[_routeId-1].isStarted = true;
+        routes[_routeId-1].taker = msg.sender;
+        
+
+        // Add info to routesStartEvents
+        routeStartEvents.push(RouteStartEvent(routeStartEvents.length+1,_routeId,_username,now,_nodes));
+        
+        emit RouteStarted(_routeId);    
+        
+        
+    }
+    function endRouteEvent(uint _routeStartId,uint user_event,uint _dataPoints,uint[] memory _nodeData)public onlyAgent{
+        uint len = routeEndEvents.length;
+        if(user_event == USER_CANCELED){
+            // User canceled so we dont care about any other data
+            // we init both dataPoints and node data to 0
+            uint[] memory nodeData= new uint[](0);
+            routeEndEvents.push(RouteEndEvent(len+1,_routeStartId,now,
+            0,nodeData,
+            USER_CANCELED));
+
+        }else if(user_event == USER_SUBMITED_ROUTE){
+            // User sumbited route
+            routeEndEvents.push(RouteEndEvent(
+                len+1,_routeStartId,now,_dataPoints,
+                _nodeData,
+                USER_SUBMITED_ROUTE));
+           
+            
+        }
+        
+    }
+    
+    
+    // Request route status by user on dapp
+    function requestRouteStatus(uint _routeId,string memory _jobID,address _oracleAddress) public onlyOwner {
+    
+
+        Chainlink.Request memory req = buildChainlinkRequest(stringToBytes32(_jobID),address(this),this.fulfillRouteStatus.selector);
+        req.add("extPath","1");
+        sendChainlinkRequestTo(_oracleAddress,req,ORACLE_PAYMENT);
+        
+        
+    }
+    function fulfillRouteStatus(bytes32 _requestId,bool _status) public recordChainlinkFulfillment(_requestId){
+        emit RouteStatusFulfilled(_requestId,_status);
+        routes[0].isFinished = _status;
+        
+    }
 
     
     
@@ -107,6 +228,18 @@ contract Movement is ChainlinkClient,Ownable {
         return false;
         
         
+    }
+    
+    function getUserIdWithAddress(address _address)private view returns(uint){
+        require(users.length>0);
+        uint len = users.length;
+        for(uint i=0;i<len;i++){
+            if(users[i].addr == _address){
+                return users[i].userId;
+            }
+        }
+        
+        revert('User with this address doesnt exist');
     }
     
     function deleteNode(uint _nodeId) public returns(bool){
@@ -144,9 +277,36 @@ contract Movement is ChainlinkClient,Ownable {
     function getAddress(uint  index) public view returns(address){
             return users[index].addr;
         }
+        
+    // Helper functions
+    function stringToBytes32(string memory source) private pure returns(bytes32 result) {
+        bytes memory tempEmptyStringTest = bytes(source);
+        if(tempEmptyStringTest.length == 0){
+            return 0x0;
+            
+        }
+        assembly {
+            result := mload(add(source,32))
+            
+        }
+    }
 
 
-
+    // modifiers
+    modifier onlyAgent(){
+        require(msg.sender == agent);
+        _;
+    }
+    
+    modifier onlyUser(uint routeId){
+        // First check if user is reqistered and his address exists in our data
+        require(userExistsByAddress[msg.sender]);
+        
+        // Then check if user is taker - he started the route
+        require(routes[routeId-1].taker == msg.sender);
+        _;
+    }
+    
     
     
 }
