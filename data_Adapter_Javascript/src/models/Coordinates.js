@@ -8,4 +8,5 @@ const schema = mongoose.Schema({
     index:Number
 })
 
+
 module.exports = mongoose.model("Coordinate",schema)

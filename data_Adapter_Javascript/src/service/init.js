@@ -16,18 +16,35 @@ const  initRoutes =async () =>{
                     routeId: value.routeId,
                     maker: value.maker,
                     taker: value.taker,
-                    startLocation: value.startLocation,
-                    endLocation: value.endLocation,
+                    startLocationLatitude: parseFloat(getCoordinateFromString(value.startLocation,1)),
+                    startLocationLongitude: parseFloat(getCoordinateFromString(value.startLocation,2)),
+                    endLocationLatitude: parseFloat(getCoordinateFromString(value.endLocation,1)),
+                    endLocationLongitude: parseFloat(getCoordinateFromString(value.endLocation,2)),
                     isStarted: value.isStarted,
                     isFinished: value.isFinished
                 })
-                 route.save()
+                 if(Route.find({routeId:value.routeId}).count() >0){}else{route.save()}
             }catch{
                 console.log("Error importing route")
             }})
         }
     })
 }
+
+const getCoordinateFromString = (s,index) =>{
+    var string = ''
+    if(index === 1){
+        string =s.substring(0,s.indexOf(','))
+        return string
+    }else{
+        string = s.substring(s.indexOf(',')+1,s.length)
+        if(string[0] === ' ') string = string.substring(1,string.length)
+        return string
+    }
+
+}
+
+
 
 module.exports = {
     initRoutes

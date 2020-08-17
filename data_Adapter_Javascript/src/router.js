@@ -1,6 +1,14 @@
 const express = require('express')
+const Queue = require("bull")
 const router = express.Router()
 const Coordinate = require('./models/Coordinates')
+const worker = require('./workers/RouteWorker')
+
+const routeStatusQueue = new Queue('route status processing','redis://redis:6379')
+routeStatusQueue.process(async (job) =>{
+    return  worker.processData(job.data)
+})
+
 
 
 
@@ -14,6 +22,7 @@ router.post('/route/:routeId',async (req,res)=>{
             index: parseInt(req.body.index)
         })
         await coordinate.save()
+        await routeStatusQueue.add({coordinate:coordinate,routeId:req.params.routeId})
         res.status(200)
         res.send(coordinate)
 

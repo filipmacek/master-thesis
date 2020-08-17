@@ -4,8 +4,10 @@ const schema = mongoose.Schema({
     routeId:String,
     maker:String,
     taker:String,
-    startLocation:String,
-    endLocation:String,
+    startLocationLatitude: Number,
+    startLocationLongitude:Number,
+    endLocationLatitude:Number,
+    endLocationLongitude:Number,
     isStarted:Boolean,
     isFinished:Boolean
 })

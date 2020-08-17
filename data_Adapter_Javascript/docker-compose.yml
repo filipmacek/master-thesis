@@ -1,13 +1,14 @@
 version: '3.0'
 services:
-  nginx-proxy:
+  nginx:
     build: ./nginx-docker
     container_name: nginx
     ports:
     - 80:80
 
-  server:
+  data_adapter:
     build: ./
+    hostname: data_adapter
     container_name: data_adapter
     ports:
     - 3000:3000
@@ -15,6 +16,7 @@ services:
   mongo_db:
     image: mongo:latest
     container_name: mongo_db
+    hostname: mongo_db
     restart: always
     environment:
       MONGO_INITDB_DATABASE: movement
@@ -25,6 +27,16 @@ services:
     volumes:
     - ./mongo-data:/data/db
     - ./init-mongo-user.js:/docker-entrypoint-initdb.d/init-mongo-user.js:ro
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    command: ["redis-server", "--bind", "redis", "--port", "6379"]
+    hostname: redis
+    ports:
+    - 6379:6379
+
+
 
 
 volumes:
