@@ -1,17 +1,65 @@
 const Route = require('../models/Route')
+const RouteStatus = require('../models/RouteStatus')
+const Coordinate = require('../models/Coordinate')
+const timeStamp  = require('../data/Timestamp')
+
+
+const THRESHOLD = 25
+let lastCoordinate = null
 
 const processData = async (data) => {
     console.log("Process coordinate")
+    console.log(data)
+
     const route = await Route.find({routeId: data.routeId})
-    console.log("Lets see")
-    console.log(data.coordinate)
-    console.log(route)
-    getDistance(route.startLocationLatitude,route.startLocationLongitude,coordinate.latitude,coordinate.longitude,25)
+    const routeStatus = await RouteStatus.find({routeId:data.routeId})
+    const coordinate = data.coordinate
 
+    //DEBUG
+    //Clear datapoints
+    if(coordinate.index === 1){
+        Coordinate.deleteMany({routeId:route.routeId},(err)=>{
+            if(err) console.log("Error "+err.toString())
+            console.log("Successfully delete coordinates data with routeId "+route.routeId.toString())
+        })
+    }
 
+    // Check if user visited start location,
+    // if he has dont check distance
+    if(routeStatus.startLocationVisited === false){
+        const distance = getDistance(route.startLocationLatitude,route.endLocationLongitude,
+                                    coordinate.latitude,coordinate.longitude)
+        if(distance <= THRESHOLD){
+            routeStatus.startLocationVisited = true
+            routeStatus.save()
+            lastCoordinate = coordinate
+        }
 
+    }else if (routeStatus.routeFinished === false)
+    {
+        const distance = getDistance(route.endLocationLatitude,route.endLocationLongitude,
+                                     coordinate.latitude,coordinate.longitude)
+        if(distance <= THRESHOLD){
+            routeStatus.routeFinished = true
+            routeStatus.save()
+        }
 
-function getDistance(lat1, lon1, lat2, lon2, unit) {
+        // Distance
+        const progressDistance = getDistance(lastCoordinate.latitude,lastCoordinate.longitude,
+                                             coordinate.latitude,coordinate.longitude)
+        routeStatus.distance = routeStatus.distance + progressDistance
+        //Time
+        const timeA= new timeStamp.Timestamp(lastCoordinate.timestamp)
+        const timeB = new timeStamp.Timestamp(coordinate.timestamp)
+        routeStatus.time = routeStatus.time + timeA.subSeconds(timeB)
+    }
+    //Data Points
+    routeStatus.dataPoints = routeStatus.dataPoints+1
+    // Save Route Status
+    routeStatus.save()
+
+}
+function getDistance(lat1, lon1, lat2, lon2) {
     if ((lat1 == lat2) && (lon1 == lon2)) {
         return 0;
     }
@@ -27,12 +75,19 @@ function getDistance(lat1, lon1, lat2, lon2, unit) {
         dist = Math.acos(dist);
         dist = dist * 180/Math.PI;
         dist = dist * 60 * 1.1515;
-        if (unit=="K") { dist = dist * 1.609344 }
-        if (unit=="N") { dist = dist * 0.8684 }
+        dist = dist * 1.609344*1000
         return dist;
     }
 }
 
+function getTime(t1,t2){
+
+
+
+}
+
+
 module.exports = {
-    processData
+    processData,
+    getDistance
 }

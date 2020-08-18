@@ -2,14 +2,18 @@ version: '3.0'
 services:
   nginx:
     build: ./nginx-docker
+    restart: always
     container_name: nginx
     ports:
     - 80:80
 
   data_adapter:
     build: ./
+    restart: always
     hostname: data_adapter
     container_name: data_adapter
+    depends_on:
+      - mongo_db
     ports:
     - 3000:3000
 
@@ -31,6 +35,7 @@ services:
   redis:
     image: redis:latest
     container_name: redis
+    restart: always
     command: ["redis-server", "--bind", "redis", "--port", "6379"]
     hostname: redis
     ports:

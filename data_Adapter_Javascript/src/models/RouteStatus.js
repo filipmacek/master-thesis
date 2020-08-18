@@ -5,12 +5,8 @@ const schema = mongoose.Schema({
     dataPoints: Number,
     startLocationVisited: Boolean,
     routeFinished: Boolean,
-    distanceKm:Number,
-    distanceM:Number,
+    distance:Number,
     time:Number,
-    averageSpeedKmh: Number,
-    averageSpeedMs:Number,
-    user_status:Boolean
 })
 
 module.exports = mongoose.model("RouteStatus",schema)
