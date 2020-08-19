@@ -4,30 +4,23 @@ const Coordinate = require('../models/Coordinate')
 const timeStamp  = require('../data/Timestamp')
 
 
-const THRESHOLD = 25
+const THRESHOLD = 30
 let lastCoordinate = null
 
 const processData = async (data) => {
     console.log("Process coordinate")
     console.log(data)
 
-    const route = await Route.find({routeId: data.routeId})
-    const routeStatus = await RouteStatus.find({routeId:data.routeId})
+    const route = await Route.findOne({routeId: data.routeId})
+    const routeStatus = await RouteStatus.findOne({routeId:data.routeId})
     const coordinate = data.coordinate
 
-    //DEBUG
-    //Clear datapoints
-    if(coordinate.index === 1){
-        Coordinate.deleteMany({routeId:route.routeId},(err)=>{
-            if(err) console.log("Error "+err.toString())
-            console.log("Successfully delete coordinates data with routeId "+route.routeId.toString())
-        })
-    }
+
 
     // Check if user visited start location,
     // if he has dont check distance
     if(routeStatus.startLocationVisited === false){
-        const distance = getDistance(route.startLocationLatitude,route.endLocationLongitude,
+        const distance = getDistance(route.startLocationLatitude,route.startLocationLongitude,
                                     coordinate.latitude,coordinate.longitude)
         if(distance <= THRESHOLD){
             routeStatus.startLocationVisited = true
@@ -52,10 +45,11 @@ const processData = async (data) => {
         const timeA= new timeStamp.Timestamp(lastCoordinate.timestamp)
         const timeB = new timeStamp.Timestamp(coordinate.timestamp)
         routeStatus.time = routeStatus.time + timeA.subSeconds(timeB)
+        lastCoordinate = coordinate
     }
-    //Data Points
+    // //Data Points
     routeStatus.dataPoints = routeStatus.dataPoints+1
-    // Save Route Status
+    // Save
     routeStatus.save()
 
 }

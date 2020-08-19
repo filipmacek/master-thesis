@@ -19,4 +19,4 @@ function getDistance(lat1, lon1, lat2, lon2) {
     }
 }
 
-console.log(getDistance(45.811503, 15.998778,45.813077, 15.997667))
+console.log(getDistance(45.811819, 15.998583,45.811967, 15.9986195))
