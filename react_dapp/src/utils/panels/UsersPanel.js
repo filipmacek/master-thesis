@@ -1,7 +1,7 @@
 import {Button, Col, Container, Form, Row,FormControl} from "react-bootstrap";
 import React from "react";
 import DAppWeb3 from "../DAppWeb3";
-import {Box} from "rimble-ui";
+import {Box, Text} from "rimble-ui";
 
 
 
@@ -34,6 +34,33 @@ class UsersPanel extends React.Component {
         // if(this.state.)
     }
 
+    renderUserConectedContent = (user) => {
+        return(
+            <Box marginLeft={"30px"}>
+                <Text.span fontSize={1} color={'mid-gra'}>
+                    Username:   {user.username}
+                </Text.span>
+                <br/>
+                <Text.span fontSize={1} color={'mid-gra'}>
+                    Address:   {user.address}
+                </Text.span>
+                <br/>
+                <Text.span fontSize={1} color={'mid-gra'}>
+                    Routes started:   {user.routesStarted}
+                </Text.span>
+                <br/>
+                <Text.span fontSize={1} color={'mid-gra'}>
+                    Routes finished:   {user.routesFinished}
+                </Text.span>
+                <br/>
+                <Text.span fontSize={1} color={'mid-gra'}>
+                    Routes completed:   {user.routesCompleted}
+                </Text.span>
+            </Box>
+    );
+    }
+
+
 
     render() {
         return (
@@ -41,11 +68,11 @@ class UsersPanel extends React.Component {
                 {({
                     account,
                     contract,
-                      users,
+                      user,
                     modals,
                     isUserCreated
                   })=>(
-                    (isUserCreated ? <p>User is created</p>:
+                    (isUserCreated ? this.renderUserConectedContent(user):
                         <Box maxWidth={'640px'} mx={'auto'} p={3} mt={2}>
 
                             <Container>

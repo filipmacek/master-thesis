@@ -21,7 +21,7 @@ class App extends Component {
     // Optional Parameter
     config={
         accountBalanceMinimum: 0.001,
-        requiredNetwork: 5
+        requiredNetwork: 42
     }
 
     showRoute = route => {

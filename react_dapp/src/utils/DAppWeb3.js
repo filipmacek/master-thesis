@@ -63,7 +63,8 @@ const DAppTransactionContext= React.createContext({
     },
     transaction: {},
     users:[],
-    isUserCreated:{}
+    isUserCreated:{},
+    user:{}
 
 })
 
@@ -76,7 +77,6 @@ class DAppWeb3 extends Component {
 
     componentDidMount() {
         this.initWeb3()
-        this.checkIfWalletExists()
         this.setupIntervals()
 
     }
@@ -124,8 +124,20 @@ class DAppWeb3 extends Component {
         },1000)
     }
 
+    setupEvents = () => {
+        // Subscribe to any new users created event when site loaded
+        // so your users are always updated
+        this.state.contract.events.NewUserCreated()
+            .on("connected",function (subscriptionId) {console.log("SubscriptionId  ",subscriptionId)})
+            .on("data",(event)=> {
+                console.log("Event - New user created",event)
+                console.log(this.state.users)
+
+            })
+    }
 
     checkIfWalletExists = () => {
+        console.log("Checking if wallets exits")
 
         if(localStorage.getItem('account') === null){
             // account is not remembered
@@ -134,9 +146,11 @@ class DAppWeb3 extends Component {
             let accountFromStorage=localStorage.getItem("account")
             let accountValidatedFromStorage=localStorage.getItem('accountValidated')
             this.setState({
-                account: accountFromStorage,
-                accountValidated: accountValidatedFromStorage
+                account: accountFromStorage, accountValidated: accountValidatedFromStorage},()=>{
+                this.checkIfUserCreated()
             })
+
+
         }
     }
 
@@ -218,8 +232,7 @@ class DAppWeb3 extends Component {
                         //After Account is completed, get balance
                         this.getAccountBalance(account)
 
-                        // Check if user is already create
-                        this.checkIfUserCreated()
+
                     })
                     //watch for account change
                     // this.pullAccountChange()
@@ -235,10 +248,14 @@ class DAppWeb3 extends Component {
     }
 
     checkIfUserCreated = () =>{
+
         const userExists=this.state.users.find(user =>user.address.toLowerCase()===this.state.account.toLowerCase())
+        console.log("User exists ",userExists)
         if(userExists !== undefined){
             console.log("User is already created")
+            this.setState({user:userExists})
             this.setState({isUserCreated:true})
+
         }
     }
 
@@ -250,7 +267,7 @@ class DAppWeb3 extends Component {
 
             console.log("Connected with contract")
             this.setState({contract},()=>{
-                this.fetchUsers()
+                 this.fetchUsers()
             })
         } catch (e) {
            console.log("Could not create contract.")
@@ -267,48 +284,39 @@ class DAppWeb3 extends Component {
 
     }
 
-    fetchUsers = () =>{
+    fetchUsers = () => {
         console.log("Fetching users")
-        let users=[]
+        this.state.contract.methods.getUsersCount().call().then(async value => {
+            var i;
+            let users = []
 
-        try {
-            this.state.contract.methods.getUsersCount().call().then(value => {
-                console.log("Users count: ", value)
-                // Init users so its always empty
+            for (i = 0; i < value; i++) {
 
-                var i;
-                let promise1,promise3;
-                for(i=0;i <value;i++) {
-                    promise1 = this.state.contract.methods.getUsername(i).call()
-                    // promise2 = this.state.contract.methods.getPassword(i).call()
-                    promise3 = this.state.contract.methods.getAddress(i).call()
-                    Promise.all([promise1,  promise3]).then(result => {
-                        users.push({username: result[0], address: result[1]})
+                await this.state.contract.methods.users(i).call().then(user => {
+                    users.push({
+                        userId: user.userId,
+                        username: user.username,
+                        address: user.addr,
+                        routesStarted: user.routesStarted,
+                        routesFinished: user.routesFinished,
+                        routesCompleted: user.routesCompleted
                     })
-                }
-            }).catch(error => {
-                console.log("Cannot get users with 2")
+                })
+
+            }
+            return users
+        }).then((users) =>{
+            this.setState({users},() =>{
+                this.checkIfWalletExists()
             })
-        }catch (e) {
-            console.log("error getting users with 2",e)
-        }
-
-        // Subscribe to any new users created event when site loaded
-        // so your users are always updated
-        this.state.contract.events.NewUserCreated()
-            .on("connected",function (subscriptionId) {console.log("SubscriptionId  ",subscriptionId)})
-            .on("data",(event)=> {
-                console.log("Event - New user created",event)
-                console.log(this.state.users)
-
-            })
-
-        this.setState({users:users},()=>{
-            console.log("Callback from fetch users ",this.state.users)
-
+        }).catch((err) => {
+            console.log("error getting users", err)
         })
-
     }
+
+
+
+
 
 
     contractMethodSendWrapper = (contractMethod,value) => {
@@ -716,6 +724,12 @@ class DAppWeb3 extends Component {
                         accountValidated:true
                     })
 
+                    // Fetch user data and put it in state
+                    const userExists=this.state.users.find(user =>user.address.toLowerCase()===this.state.account.toLowerCase())
+                    this.setState({user:userExists})
+
+
+
                     if(this.state.rememberWallet){
                         console.log("Validating account from local storage that user accepted")
 
@@ -743,7 +757,6 @@ class DAppWeb3 extends Component {
         this.getRequiredNetwork()
         await this.getNetworkId()
         await this.getNetworkName()
-        console.log("Network ",this.state.network)
 
         // Validate for required network
         let network = {...this.state.network}
@@ -1007,7 +1020,8 @@ class DAppWeb3 extends Component {
         },
         users:[],
         transactions:{},
-        isUserCreated:false
+        isUserCreated:false,
+        user:null
     }
 
     render() {

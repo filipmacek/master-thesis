@@ -65,20 +65,20 @@ export default function SmartContractPanel(props) {
                        <RoutesPanel/>
                     </ExpansionPanelDetails>
                 </ExpansionPanel>
-                <ExpansionPanel>
-                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                        <div className="mr-2">
-                            <ComputerIcon/>
-                        </div>
-                        <Typography className={styles.heading}>Nodes</Typography>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails>
-                        <Typography>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
-                            sit amet blandit leo lobortis eget.
-                        </Typography>
-                    </ExpansionPanelDetails>
-                </ExpansionPanel>
+                {/*<ExpansionPanel>*/}
+                {/*    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>*/}
+                {/*        <div className="mr-2">*/}
+                {/*            <ComputerIcon/>*/}
+                {/*        </div>*/}
+                {/*        <Typography className={styles.heading}>Nodes</Typography>*/}
+                {/*    </ExpansionPanelSummary>*/}
+                {/*    <ExpansionPanelDetails>*/}
+                {/*        <Typography>*/}
+                {/*            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,*/}
+                {/*            sit amet blandit leo lobortis eget.*/}
+                {/*        </Typography>*/}
+                {/*    </ExpansionPanelDetails>*/}
+                {/*</ExpansionPanel>*/}
             </div>
         </Box>
     );
