@@ -1,5 +1,6 @@
 var BundleTracker=require('webpack-bundle-tracker');
 var path=require('path');
+var webpack = require('webpack')
 
 const SRC_DIR = __dirname +'/src';
 const DIST_DIR= __dirname +'/bundles';
@@ -21,7 +22,8 @@ module.exports = {
         new BundleTracker({
             path: __dirname,
             filename: 'webpack-stats.json'
-        })
+        }),
+        new webpack.EnvironmentPlugin(['GOOGLE_MAP_API_KEY'])
 
     ]
     ,

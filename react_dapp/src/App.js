@@ -10,6 +10,7 @@ import WalletBlock from "./components/WalletBlock";
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'
 import SmartContractPanel from "./utils/panels/SmartContractPanel";
+import {Button, Col, Container, Row} from "react-bootstrap";
 
 
 
@@ -51,7 +52,8 @@ class App extends Component {
                           network,
                           users,
                           contractMethodSendWrapper,
-                          isUserCreated
+                          isUserCreated,
+                          modals
                         })=>(
                             <Box>
                               <Header/>
@@ -94,8 +96,25 @@ class App extends Component {
                                        account={account}
                                        contractMethodSendWrapper={contractMethodSendWrapper}
                                        isUserCreated={isUserCreated}
-
+                                       modals={modals}
                                    />
+                                   <Box maxWidth='640px' p={3} mx={"auto"}>
+                                       <Container className="mt-4">
+                                           <Row>
+                                               <Col>
+                                                   <Button variant="outline-success" onClick={modals.methods.openCreateRouteModal}>Create Route</Button>
+                                               </Col>
+                                               <Col>
+                                                   <Button variant="outline-info" onClick={modals.methods.openStatusOfRoutesModal}>Status of routes</Button>
+                                               </Col>
+                                               <Col>
+                                                   <Button variant="outline-dark" onClick={modals.methods.openEventsModal}>Events</Button>
+                                               </Col>
+                                           </Row>
+                                       </Container>
+
+                                   </Box>
+
                             </Box>
                       )}
                   </DAppWeb3.Consumer>
@@ -103,13 +122,12 @@ class App extends Component {
                 <ToastContainer
                 position="bottom-right"
                 autoClose={4000}
-                hideProgressBar
+                hideProgressBar={false}
                 newestOnTop={false}
                 closeOnClick
                 rtl={false}
                 pauseOnFocusLoss
                 draggable
-                pauseOnHover
             />
             </ThemeProvider>
 

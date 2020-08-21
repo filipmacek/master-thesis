@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
@@ -9,10 +7,10 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {Box, Flex} from "rimble-ui";
 import AccessibilityIcon from '@material-ui/icons/Accessibility';
 import GestureIcon from '@material-ui/icons/Gesture';
-import ComputerIcon from "@material-ui/icons/Computer"
 import UsersPanel from "./UsersPanel";
 import {Star} from '@rimble/icons'
 import RoutesPanel from "./RoutesPanel";
+import {Row,Button, Col, Container} from "react-bootstrap";
 export default function SmartContractPanel(props) {
    const styles = {
         root: {
@@ -65,20 +63,9 @@ export default function SmartContractPanel(props) {
                        <RoutesPanel/>
                     </ExpansionPanelDetails>
                 </ExpansionPanel>
-                {/*<ExpansionPanel>*/}
-                {/*    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>*/}
-                {/*        <div className="mr-2">*/}
-                {/*            <ComputerIcon/>*/}
-                {/*        </div>*/}
-                {/*        <Typography className={styles.heading}>Nodes</Typography>*/}
-                {/*    </ExpansionPanelSummary>*/}
-                {/*    <ExpansionPanelDetails>*/}
-                {/*        <Typography>*/}
-                {/*            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,*/}
-                {/*            sit amet blandit leo lobortis eget.*/}
-                {/*        </Typography>*/}
-                {/*    </ExpansionPanelDetails>*/}
-                {/*</ExpansionPanel>*/}
+
+
+
             </div>
         </Box>
     );

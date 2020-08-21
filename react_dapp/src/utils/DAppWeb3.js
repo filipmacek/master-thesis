@@ -31,8 +31,6 @@ const DAppTransactionContext= React.createContext({
     },
     modals: {
         data: {
-            noWeb3BrowserModalIsOpen: {},
-            noWalletModalIsOpen: {},
             connectionModalIsOpen: {},
             accountConnectionPending: {},
             userRejectedConnect: {},
@@ -40,29 +38,41 @@ const DAppTransactionContext= React.createContext({
             userRejectedValidation: {},
             wrongNetworkModalIsOpen: {},
             transactionConnectionModalIsOpen: {},
-            listUserModalIsOpen: {}
+            listUserModalIsOpen:{},
+            userSubmitModalIsOpen:{},
+            createRouteModalIsOpen:{},
+            eventsModalIsOpen:{},
+            statusOfRoutesModalIsOpen:{}
         },
         methods: {
-            openNoWeb3BrowserModal: () => {},
-            closeNoWeb3BrowserModal: () => {},
-            closeConnectionPendingModal: () => {},
-            openConnectionPendingModal: () => {},
-            closeUserRejectedConnectionModal: () => {},
-            openUserRejectedConnectionModal: () => {},
-            closeValidationPendingModal: () => {},
-            openValidationPendingModal: () => {},
-            closeUserRejectedValidationModal: () => {},
-            openUserRejectedValidationModal: () => {},
-            closeWrongNetworkModal: () => {},
-            openWrongNetworkModal: () => {},
-            closeTransactionConnectionModal: () => {},
-            openTransactionConnectionModal: () => {},
-            openListUserModal: ()=>{},
-            closeListUserModal: ()=>{}
+            closeConnectionModal: ()=>{},
+            openConnectionModal: ()=>{},
+            closeConnectionPendingModal:()=>{},
+            openConnectionPendingModal:()=>{},
+            closeUserRejectedConnectionModal:()=>{},
+            openUserRejectedConnectionModal:()=>{} ,
+            closeValidationPendingModal:()=>{},
+            openValidationPendingModal:()=>{},
+            closeUserRejectedValidationModal:()=>{},
+            openUserRejectedValidationModal:()=>{} ,
+            closeWrongNetworkModal:()=>{} ,
+            openWrongNetworkModal:()=>{},
+            closeTransactionConnectionModal:()=>{} ,
+            openTransactionConnectionModal:()=>{} ,
+            closeListUserModal:()=>{},
+            openListUserModal:()=>{},
+            openCreateRouteModal:()=>{},
+            closeCreateRouteModal:()=>{},
+            openEventsModal:()=>{},
+            closeEventsModal:()=>{},
+            openStatusOfRoutesModal:()=>{},
+            closeStatusOfRoutesModal:()=>{},
+
         }
     },
     transaction: {},
     users:[],
+    routes:[],
     isUserCreated:{},
     user:{}
 
@@ -268,6 +278,7 @@ class DAppWeb3 extends Component {
             console.log("Connected with contract")
             this.setState({contract},()=>{
                  this.fetchUsers()
+                this.fetchRoutes()
             })
         } catch (e) {
            console.log("Could not create contract.")
@@ -314,7 +325,31 @@ class DAppWeb3 extends Component {
         })
     }
 
+    fetchRoutes = () => {
+        console.log("Fetching routes")
+        this.state.contract.methods.getRoutesCount().call().then(async value => {
+            var i;
+            let routes=[]
+            for(i = 0;i<value;i++){
+                await this.state.contract.methods.routes(i).call().then(route =>{
+                    routes.push({
+                        routeId: route.routeId,
+                        maker:route.maker,
+                        taker:route.taker,
+                        startLocation:route.startLocation,
+                        endLocation:route.endLocation,
+                        isStarted:route.isStarted,
+                        isFinished:route.isFinished,
+                        description:route.description
+                    })
+                })
+            }
+            return routes
 
+        }).then(routes => {
+            this.setState({routes:routes})
+        })
+    }
 
 
 
@@ -364,12 +399,42 @@ class DAppWeb3 extends Component {
             this.contractAddUser(contract, account, transaction, value)
         }else if (contractMethod === "deleteUser") {
             this.contractDeleteUser(contract,account,transaction,value)
+        }else if (contractMethod === 'addRoute'){
+            this.contractAddRoute(contract,account,value)
         }
 
 
         // Network and account are connected,its OK to send transaction
 
 
+    }
+
+    contractAddRoute = (contract,account,value) =>{
+        console.log("Contract ",contract)
+        console.log("Account ",account)
+        console.log("Value ",value)
+        try {
+            contract.methods.addRoute(value.startLocation,value.endLocation,value.description)
+                .send({from:account})
+                .on("transactionHash",hash =>{
+                    console.log("AddRoute hash ",hash)
+                    //Toast Transaction Created
+                    toast.info('Added New Route',{
+                        position: "bottom-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    this.closeCreateRouteModal()
+                })
+
+
+        }catch (e) {
+            console.log("Error sending transaction which creates new route")
+        }
     }
 
     contractDeleteUser =(contract,account,transaction,value) => {
@@ -384,12 +449,12 @@ class DAppWeb3 extends Component {
                     //Toast Transaction Created
                     toast.info('Transaction created', {
                         position: "bottom-right",
-                        autoClose: 3000,
-                        hideProgressBar: true,
+                        autoClose: 5000,
+                        hideProgressBar: false,
                         closeOnClick: true,
-                        pauseOnHover: false,
+                        pauseOnHover: true,
                         draggable: true,
-                        progress: true,
+                        progress: undefined,
                     });
 
                     transaction.hash = hash
@@ -464,12 +529,12 @@ class DAppWeb3 extends Component {
                     //Toast Transaction Created
                     toast.info('Transaction created', {
                         position: "bottom-right",
-                        autoClose: 3000,
-                        hideProgressBar: true,
+                        autoClose: 5000,
+                        hideProgressBar: false,
                         closeOnClick: true,
-                        pauseOnHover: false,
+                        pauseOnHover: true,
                         draggable: true,
-                        progress: true,
+                        progress: undefined,
                     });
 
 
@@ -708,6 +773,7 @@ class DAppWeb3 extends Component {
 
                 }else {
                     console.log("Account has been validated: ",this.state.account)
+                    this.checkIfUserCreated()
                     const successMessage="Connected"
                     console.log(successMessage,signature)
                     toast.success("Welcome to the Movement Demo DApp", {
@@ -961,8 +1027,63 @@ class DAppWeb3 extends Component {
     }
 
 
+    openCreateRouteModal = e => {
+        if (typeof e !== "undefined"){
+            e.preventDefault()
+        }
+        if (!this.state.account){
+            alert("Please connect with your wallet to create new Route")
+            return
+        }
+
+        let modals ={...this.state.modals}
+        modals.data.createRouteModalIsOpen = true
+        this.setState({modals})
+    }
+
+    closeCreateRouteModal = e => {
+        if (typeof e !== "undefined"){
+            e.preventDefault()
+        }
+        let modals ={...this.state.modals}
+        modals.data.createRouteModalIsOpen = false
+        this.setState({modals})
+    }
 
 
+    openEventsModal = e => {
+        if (typeof e !== "undefined"){
+            e.preventDefault()
+        }
+        let modals ={...this.state.modals}
+        modals.data.eventsModalIsOpen = true
+        this.setState({modals})
+    }
+
+    closeEventsModal = e => {
+        if (typeof e !== "undefined"){
+            e.preventDefault()
+        }
+        let modals ={...this.state.modals}
+        modals.data.eventsModalIsOpen = false
+        this.setState({modals})
+    }
+    openStatusOfRoutesModal = e => {
+        if (typeof e !== "undefined"){
+            e.preventDefault()
+        }
+        let modals ={...this.state.modals}
+        modals.data.statusOfRoutesModalIsOpen = true
+        this.setState({modals})
+    }
+    closeStatusOfRoutesModal = e => {
+        if (typeof e !== "undefined"){
+            e.preventDefault()
+        }
+        let modals ={...this.state.modals}
+        modals.data.statusOfRoutesModalIsOpen =false
+        this.setState({modals})
+    }
     state={
         contract:{},
         account: null,
@@ -983,8 +1104,6 @@ class DAppWeb3 extends Component {
         },
         modals: {
             data: {
-                noWeb3BrowserModalIsOpen: this.noWeb3BrowserModalIsOpen,
-                noWalletModalIsOpen: this.noWalletModalIsOpen,
                 connectionModalIsOpen: null,
                 accountConnectionPending: null,
                 userRejectedConnect: null,
@@ -993,13 +1112,13 @@ class DAppWeb3 extends Component {
                 wrongNetworkModalIsOpen: null,
                 transactionConnectionModalIsOpen: null,
                 listUserModalIsOpen:null,
-                userSubmitModalIsOpen:null
+                userSubmitModalIsOpen:null,
+                createRouteModalIsOpen:null,
+                eventsModalIsOpen:null,
+                statusOfRoutesModalIsOpen:null
             },
             methods: {
-                openNoWeb3BrowserModal: this.openNoWeb3BrowserModal,
-                closeNoWeb3BrowserModal: this.closeNoWeb3BrowserModal,
-                openNoWalletModal: this.openNoWalletModal,
-                closeNoWalletModal: this.closeNoWalletModal,
+
                 closeConnectionModal: this.closeConnectionModal,
                 openConnectionModal: this.openConnectionModal,
                 closeConnectionPendingModal: this.closeConnectionPendingModal,
@@ -1015,10 +1134,18 @@ class DAppWeb3 extends Component {
                 closeTransactionConnectionModal: this.closeTransactionConnectionModal,
                 openTransactionConnectionModal: this.openTransactionConnectionModal,
                 closeListUserModal: this.closeListUserModal,
-                openListUserModal: this.openListUserModal
+                openListUserModal: this.openListUserModal,
+                openCreateRouteModal: this.openCreateRouteModal,
+                closeCreateRouteModal: this.closeCreateRouteModal,
+                openEventsModal: this.openEventsModal,
+                closeEventsModal: this.closeEventsModal,
+                openStatusOfRoutesModal:this.openStatusOfRoutesModal,
+                closeStatusOfRoutesModal:this.closeStatusOfRoutesModal,
+
             }
         },
         users:[],
+        routes:[],
         transactions:{},
         isUserCreated:false,
         user:null
@@ -1038,6 +1165,7 @@ class DAppWeb3 extends Component {
                    network={this.state.network}
                    modals={this.state.modals}
                    users={this.state.users}
+                   routes={this.state.routes}
                    contractMethodSendWrapper={this.contractMethodSendWrapper}
                    clearAccount={this.clearAccount}
                />

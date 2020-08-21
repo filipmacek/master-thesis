@@ -1,12 +1,15 @@
 import React, {Component} from 'react';
-import ConnectionModal from "./components/ConnectionModal";
-import ValidationPendingModal from "./components/ValidationPendingModal";
-import UserRejectedValidationModal from "./components/UserRejectedValidationModal";
-import ConnectionPendingModal from "./components/ConnectionPendingModal";
-import WrongNetworkModal from "./components/WrongNetworkModal";
-import TransactionConnectionModal from "./components/TransactionConnectionModal";
-import UserRejectedConnectionModal from "./components/UserRejectedConnectionModal";
-import ListUsersModal from "./components/ListUsersModal";
+import ConnectionModal from "./components/modals/ConnectionModal";
+import ValidationPendingModal from "./components/modals/ValidationPendingModal";
+import UserRejectedValidationModal from "./components/modals/UserRejectedValidationModal";
+import ConnectionPendingModal from "./components/modals/ConnectionPendingModal";
+import WrongNetworkModal from "./components/modals/WrongNetworkModal";
+import TransactionConnectionModal from "./components/modals/TransactionConnectionModal";
+import UserRejectedConnectionModal from "./components/modals/UserRejectedConnectionModal";
+import ListUsersModal from "./components/modals/ListUsersModal";
+import CreateRouteModal from "./components/modals/CreateRouteModal";
+import EventsModal from "./components/EventsModal";
+import StatusOfRoutesModal from "./components/modals/StatusOfRoutesModal";
 
 
 class ConnectionModalsUtil extends Component {
@@ -71,6 +74,22 @@ class ConnectionModalsUtil extends Component {
                     account={this.props.account}
                     contractMethodSendWrapper={this.props.contractMethodSendWrapper}
                 />
+                <CreateRouteModal
+                    closeModal = {this.props.modals.methods.closeCreateRouteModal}
+                    isOpen = {this.props.modals.data.createRouteModalIsOpen}
+                    account={this.props.account}
+                    contractMethodSendWrapper={this.props.contractMethodSendWrapper}
+                />
+                <EventsModal
+                    closeModal = {this.props.modals.methods.closeEventsModal}
+                    isOpen={this.props.modals.data.eventsModalIsOpen}
+                />
+                <StatusOfRoutesModal
+                    closeModal = {this.props.modals.methods.closeStatusOfRoutesModal}
+                    isOpen = {this.props.modals.data.statusOfRoutesModalIsOpen}
+                    routes={this.props.routes}
+                />
+
 
             </div>
         );
