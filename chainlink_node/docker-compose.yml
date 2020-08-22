@@ -1,32 +1,51 @@
 version: '3.0'
 services:
-  postgres:
-    image: postgres:latest
-    container_name: postgres
-    environment:
-      POSTGRES_USER: node1
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: chainlink_db
+  nginx:
+    build: ./data_adapter/nginx-docker
+    restart: always
+    container_name: nginx
+    depends_on:
+      - data_adapter
     ports:
-    - 5432:5432
-    volumes:
-    - database-data:/var/lib/postgresql/data
+    - 80:80
 
-  chainlink:
-    image: smartcontract/chainlink
-    container_name: chainlink_node
-    volumes:
-    - ~/node1:/chainlink
-    env_file:
-      - env
-    command: "local n"
+  data_adapter:
+    build: ./data_adapter
+    restart: always
+    hostname: data_adapter
+    container_name: data_adapter
+    depends_on:
+      - mongo
     ports:
-    - 6688:6688
+    - 3000:3000
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    hostname: mongo
+    environment:
+      MONGO_INITDB_DATABASE: movement
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+    - 27017:27017
+    volumes:
+    - ./mongo-data:/data/db
+    - ./data_adapter/init-mongo-user.js:/docker-entrypoint-initdb.d/init-mongo-user.js:ro
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    command: ["redis-server", "--bind", "redis", "--port", "6379"]
+    hostname: redis
+    ports:
+    - 6379:6379
+
+
+
+
+
 
 volumes:
-  database-data:
-
-
-
-
-
+  mongo-data:

@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const port = 3000
 const router = require('./router')
-var uri = 'mongodb://admin:password@mongo_db:27017/movement'
+var uri = 'mongodb://admin:password@mongo:27017/movement'
 const init = require('./service/init')
 
 mongoose.connect(uri,{useUnifiedTopology:true,useNewUrlParser:true})

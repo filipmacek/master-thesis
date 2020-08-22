@@ -7,5 +7,7 @@ CHAINLINK_TLS_PORT=0
 SECURE_COOKIES=false
 GAS_UPDATER_ENABLED=true
 ALLOW_ORIGINS=*
-ETH_URL=https://kovan.infura.io/v3/42f42a255e264be7a6bc8373c4308e96
-DATABASE_URL=postgresql://node:pass@localhost:5432/chainlink_db
+ETH_URL=wss://kovan.infura.io/ws/v3/42f42a255e264be7a6bc8373c4308e96
+DATABASE_URL=postgresql://node:pass@localhost:5432/chainlink_db?sslmode=disable
+DATABASE_TIMEOUT=0
+ORACLE_CONTRACT_ADDRESS=0x8FB5986E799dDb27e5031BADbE1b519deB913b98

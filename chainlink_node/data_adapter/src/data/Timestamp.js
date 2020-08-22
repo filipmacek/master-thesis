@@ -6,11 +6,8 @@ class Timestamp {
     }
 
     getSeconds(s){
-        console.log("s: "+s)
         const index= this.getPosition(s,':',2)
-        console.log("index: "+index.toString())
         let tmp = s.substring(index+1,index+3)
-        console.log("tmp: "+tmp.toString())
         if(tmp[0]==='0'){tmp=tmp.substring(1,tmp.length)}
         return tmp
 
@@ -32,17 +29,40 @@ class Timestamp {
     }
 
     subSeconds(tmp){
-        return Math.abs(tmp.hours - this.hours)*60*60+Math.abs(tmp.minutes - this.minutes)*60+Math.abs(tmp.seconds-this.seconds)
+        let secondsDiff=0
+        let minutesMinus=0
+
+        let minutesDiff=0
+        let hoursMinus=0
+
+        let hoursDiff=0
+        // seconds
+        if( this.seconds < tmp.seconds){
+            secondsDiff = (60 + this.seconds - tmp.seconds)
+            minutesMinus =1
+        }else{
+            secondsDiff = this.seconds -  tmp.seconds
+        }
+
+        //minutes
+        if(this.minutes < tmp.minutes){
+            minutesDiff = (60+this.minutes - tmp.minutes) - minutesMinus
+            hoursMinus =1
+        }else{
+            minutesDiff = this.minutes -tmp.minutes -minutesMinus
+        }
+        hoursDiff = this.hours-tmp.hours-hoursMinus
+
+
+
+        return hoursDiff*60*60
+            +minutesDiff*60
+            +secondsDiff
     }
 
 
 }
-// const x = new Timestamp("12:12:14")
-// const y = new Timestamp("12:12:27")
-// console.log(x)
-// console.log(y)
-//
-// console.log(x.subSeconds(y))
+
 
 module.exports = {
     Timestamp

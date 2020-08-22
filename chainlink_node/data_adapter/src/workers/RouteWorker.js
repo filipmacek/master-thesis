@@ -42,8 +42,8 @@ const processData = async (data) => {
                                              coordinate.latitude,coordinate.longitude)
         routeStatus.distance = routeStatus.distance + progressDistance
         //Time
-        const timeA= new timeStamp.Timestamp(lastCoordinate.timestamp)
-        const timeB = new timeStamp.Timestamp(coordinate.timestamp)
+        const timeA= new timeStamp.Timestamp(coordinate.timestamp)
+        const timeB = new timeStamp.Timestamp(lastCoordinate.timestamp)
         routeStatus.time = routeStatus.time + timeA.subSeconds(timeB)
         lastCoordinate = coordinate
     }
