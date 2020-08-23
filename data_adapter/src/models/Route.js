@@ -9,6 +9,8 @@ const schema = mongoose.Schema({
     endLocationLatitude:Number,
     endLocationLongitude:Number,
     isStarted:Boolean,
-    isFinished:Boolean
+    isFinished:Boolean,
+    isCompleted:Boolean,
+    description: String
 })
 module.exports = mongoose.model("Route",schema)

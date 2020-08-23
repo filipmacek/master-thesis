@@ -13,14 +13,14 @@ services:
     hostname: data_adapter
     container_name: data_adapter
     depends_on:
-      - mongo_db
+      - mongo
     ports:
     - 3000:3000
 
-  mongo_db:
+  mongo:
     image: mongo:latest
-    container_name: mongo_db
-    hostname: mongo_db
+    container_name: mongo
+    hostname: mongo
     restart: always
     environment:
       MONGO_INITDB_DATABASE: movement

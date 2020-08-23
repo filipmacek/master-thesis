@@ -10,10 +10,12 @@ const  initRoutes =async () =>{
     const contract = await new web3.eth.Contract(metadata.abi,metadata.address)
 
     contract.methods.getRoutesCount().call().then((value) =>{
+        console.log("Routes count ",value)
         var i;
         for(i=0;i<value;i++){
             contract.methods.routes(i).call().then( async value=>{
             try {
+                console.log("Route ",value)
                 const route = new Route({
                     routeId: value.routeId,
                     maker: value.maker,
@@ -23,7 +25,9 @@ const  initRoutes =async () =>{
                     endLocationLatitude: parseFloat(getCoordinateFromString(value.endLocation,1)),
                     endLocationLongitude: parseFloat(getCoordinateFromString(value.endLocation,2)),
                     isStarted: value.isStarted,
-                    isFinished: value.isFinished
+                    isFinished: value.isFinished,
+                    isCompleted: value.isCompleted,
+                    description: value.description
                 })
                 const routeStatus = new RouteStatus({
                     routeId: value.routeId,
