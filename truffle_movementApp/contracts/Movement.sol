@@ -5,7 +5,7 @@ import "./lib/vendor/Ownable.sol";
 import "./lib/ChainlinkClient.sol";
 import './DataServiceAgreement.sol';
 
-contract Movement is ChainlinkClient,Ownable {
+contract Movement is ChainlinkClient,Ownable{
     
     // Global config
     // Agent is entity who is recording and listening on our android app for user UI event
@@ -127,10 +127,10 @@ contract Movement is ChainlinkClient,Ownable {
         // init madin User
         addUser("Madin","pass");
         
-        // init route 
+        // init routes 
         addRoute("45.812806, 15.997851","45.812279, 15.996553","Simple test route");
         
-        // init node Koala
+        // init nodes
         addNode("Koala","54.147.250.55","api",0xa5CB721FC436796b22D322cc2eC2DBc562C3C67e);
     }
 
