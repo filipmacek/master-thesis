@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import {Modal} from "rimble-ui";
-import ModalCard from "./ModalCard";
+import ModalCard from "../ModalCard";
+import {Modal} from "react-bootstrap";
+import EventCard from "./EventCard";
 
 class EventsModal extends Component {
     renderModalContent = () =>{
@@ -15,14 +16,16 @@ class EventsModal extends Component {
 
     render() {
         return (
-            <Modal isOpen={this.props.isOpen}>
-                <ModalCard closeFunc={this.props.closeModal}>
-                    <ModalCard.Body>
-                        {this.renderModalContent()}
-                    </ModalCard.Body>
-
-                </ModalCard>
+            <Modal show={this.props.isOpen} onHide={this.props.closeModal}>
+                <Modal.Header>Route Events</Modal.Header>
+                <Modal.Body>
+                    {this.props.endEvents.map((item,i)=>
+                        <EventCard startEvent={this.props.startEvents[i]}
+                            endEvent={this.props.endEvents[i]}/>)}
+                </Modal.Body>
+                {}
             </Modal>
+
 
 
         );

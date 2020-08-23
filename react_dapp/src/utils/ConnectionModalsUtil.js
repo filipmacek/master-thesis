@@ -8,7 +8,7 @@ import TransactionConnectionModal from "./components/modals/TransactionConnectio
 import UserRejectedConnectionModal from "./components/modals/UserRejectedConnectionModal";
 import ListUsersModal from "./components/modals/ListUsersModal";
 import CreateRouteModal from "./components/modals/CreateRouteModal";
-import EventsModal from "./components/EventsModal";
+import EventsModal from "./components/modals/EventsModal";
 import StatusOfRoutesModal from "./components/modals/StatusOfRoutesModal";
 
 
@@ -83,11 +83,14 @@ class ConnectionModalsUtil extends Component {
                 <EventsModal
                     closeModal = {this.props.modals.methods.closeEventsModal}
                     isOpen={this.props.modals.data.eventsModalIsOpen}
+                    startEvents = {this.props.startEvents}
+                    endEvents = {this.props.endEvents}
                 />
                 <StatusOfRoutesModal
                     closeModal = {this.props.modals.methods.closeStatusOfRoutesModal}
                     isOpen = {this.props.modals.data.statusOfRoutesModalIsOpen}
                     routes={this.props.routes}
+                    account = {this.props.account}
                 />
 
 

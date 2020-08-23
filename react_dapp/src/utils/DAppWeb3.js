@@ -73,6 +73,10 @@ const DAppTransactionContext= React.createContext({
     transaction: {},
     users:[],
     routes:[],
+    startEvents:[],
+    endEvents:[],
+    checkStatusEvents:[],
+    routeCompletedEvent:[],
     isUserCreated:{},
     user:{}
 
@@ -279,6 +283,8 @@ class DAppWeb3 extends Component {
             this.setState({contract},()=>{
                  this.fetchUsers()
                 this.fetchRoutes()
+                this.fetchStartEvents()
+                this.fetchEndEvents()
             })
         } catch (e) {
            console.log("Could not create contract.")
@@ -350,6 +356,60 @@ class DAppWeb3 extends Component {
             this.setState({routes:routes})
         })
     }
+
+    fetchStartEvents = () => {
+        console.log("Fetching start events")
+        this.state.contract.methods.getRouteStartEventCount().call().then(async value => {
+            console.log("Start events count ",value)
+            var i;
+            let startEvents=[]
+            for(i=0;i<value;i++){
+                await this.state.contract.methods.routeStartEvents(i).call().then(event =>{
+                    startEvents.push({
+                        routeStartId:event.routeStartId,
+                        routeId:event.routeId,
+                        username: event.username,
+                        timestamp:this.getTimestamp(event.timestamp),
+                        nodeId: event.nodeId
+                    })
+                })
+            }
+            return startEvents
+        }).then( startEvents => {
+            console.log("Start Events ",startEvents)
+            this.setState({startEvents:startEvents})
+        })
+    }
+    getTimestamp = (t) => {
+        return new Date(t*1000)
+    }
+
+    fetchEndEvents = () => {
+        console.log("Fetching end events")
+        this.state.contract.methods.getRouteEndEventCount().call().then(async value => {
+            console.log("End events count ",value)
+            var i;
+            let endEvents=[]
+            for(i=0;i<value;i++){
+                await this.state.contract.methods.routeEndEvents(i).call().then(event =>{
+                    endEvents.push({
+                        routeEndId: event.routeEndId,
+                        routeId: event.routeId,
+                        dataPoints: event.dataPoints,
+                        timestamp: this.getTimestamp(event.timestamp),
+                        nodeId:event.nodeId,
+                        userStatus:event.userStatus
+
+                    })
+                })
+            }
+            return endEvents
+        }).then(endEvents =>{
+            console.log("End events ",endEvents)
+            this.setState({endEvents:endEvents})
+        })
+    }
+
 
 
 
@@ -1146,6 +1206,10 @@ class DAppWeb3 extends Component {
         },
         users:[],
         routes:[],
+        startEvents:[],
+        endEvents:[],
+        checkStatusEvents:[],
+        routeCompletedEvent:[],
         transactions:{},
         isUserCreated:false,
         user:null
@@ -1154,7 +1218,7 @@ class DAppWeb3 extends Component {
     render() {
         return (
            <div>
-               <DAppTransactionContext.Provider value={this.state} {...this.props}/>
+               <DAppTransactionContext.Provider value={this.state} {...this.props}>
                <ConnectionModalsUtil
                    initAccount={this.state.initAccount}
                    account={this.state.account}
@@ -1166,11 +1230,12 @@ class DAppWeb3 extends Component {
                    modals={this.state.modals}
                    users={this.state.users}
                    routes={this.state.routes}
+                   startEvents = {this.state.startEvents}
+                   endEvents = {this.state.endEvents}
                    contractMethodSendWrapper={this.contractMethodSendWrapper}
                    clearAccount={this.clearAccount}
                />
-
-
+               </DAppTransactionContext.Provider>
            </div>
         );
     }
