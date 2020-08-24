@@ -20,33 +20,27 @@ class StatusOfRoutesModal extends Component {
 
     render() {
         return (
-            <DAppWeb3.Consumer>
-                {({
-                    startEvents,
-                    endEvents,
-                    checkStatusEvents,
-                    routeCompletedEvents
-                  })=>(
+
                     <Modal show={this.props.isOpen} onHide={this.props.closeModal}>
                         <Modal.Header closeButton>
                             <Modal.Title>Route list</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
                                 {this.props.routes.map((item,i) =>
+
                                     <RouteCard
                                         route={item}
                                         account={this.props.account}
-                                        startEvents={startEvents.find(event => event.routeId === item.routeId)}
-                                        endEvents = {endEvents.find(event => event.routeId === item.routeId)}
-
+                                        startEvents={this.props.startEvents.filter(event => event.routeId === item.routeId)}
+                                        endEvents = {this.props.endEvents.filter(event => event.routeId === item.routeId)}
                                     />
                                     )}
+
                         </Modal.Body>
                     </Modal>
 
 
-                )}
-            </DAppWeb3.Consumer>
+
 
 
         );

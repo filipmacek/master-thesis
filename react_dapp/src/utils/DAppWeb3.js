@@ -374,7 +374,6 @@ class DAppWeb3 extends Component {
                         routeId: event.routeId,
                         username: event.username,
                         timestamp: this.getTimestamp(event.timestamp),
-                        nodeId: event.nodeId,
                         node1Status: event.node1Status,
                         node2Status: event.node2Status,
                         txHash: txHashes[i]
@@ -414,8 +413,8 @@ class DAppWeb3 extends Component {
                         routeEndId: event.routeEndId,
                         routeId: event.routeId,
                         dataPoints: event.dataPoints,
+                        username: event.username,
                         timestamp: this.getTimestamp(event.timestamp),
-                        nodeId:event.nodeId,
                         userStatus:event.userStatus,
                         txHash: txHashes[i],
                         node1DataPoints:event.node1DataPoints,

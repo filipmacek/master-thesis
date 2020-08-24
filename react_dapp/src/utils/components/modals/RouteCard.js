@@ -1,12 +1,19 @@
 import React, {Component} from 'react';
-import {Card,Accordion} from "react-bootstrap";
+import {Card, Accordion, Container} from "react-bootstrap";
 import CheckIcon from '@material-ui/icons/Check';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import DirectionsRunIcon from '@material-ui/icons/DirectionsRun';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import AlarmOnIcon from '@material-ui/icons/AlarmOn';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+const _ = require("lodash")
+import FormatAlignJustifyIcon from '@material-ui/icons/FormatAlignJustify';
+import RouteEventContainer from "./RouteEventContainer";
 
+const textStyle = {
+    fontSize:"15px",
+    marginBottom:"6px"
+}
 class RouteCard extends Component {
     state = {
         status:null,
@@ -60,9 +67,7 @@ class RouteCard extends Component {
             this.props.route.isCompleted !== this.state.isCompleted) {
             this.setStatusOfRoute()
         }
-        // if(this.props.account !== undefined && this.state.route.maker !== undefined){
-        //     console.log("update")
-        // }
+
 
     }
 
@@ -75,46 +80,55 @@ class RouteCard extends Component {
             }
         }
 
+
+
+        this.setState({events:_.concat(this.props.startEvents,this.props.endEvents)
+                .sort((a,b)=>(a.timestamp > b.timestamp ? 1 : -1) )},()=>{
+        })
+
     }
+
+
 
 
     render() {
 
         return (
-                <Card className={`mb-3 ${this.state.isOwner ? "border border-primary":null}`}>
+                <Card className={`mb-4 ${this.state.isOwner ? "border border-primary":null}`}>
                     <Card.Header style={{display:'flex'}}>
-                        <span> RouteId:    {this.props.route.routeId}</span>
+                        <span> <b>RouteID:    {this.props.route.routeId}</b></span>
                         <span style={{marginLeft:'auto'}}>{this.state.isOwner ? <VisibilityIcon/>:null }</span>
-
-
                     </Card.Header>
                     <Card.Body>
-                        <Card.Text>Maker:  {this.props.route.maker}</Card.Text>
-                        <Card.Text>StartLocation:         {this.props.route.startLocation}</Card.Text>
-                        <Card.Text>EndLocation:         {this.props.route.endLocation}</Card.Text>
-                        <Card.Text>Description:          {this.props.route.description}</Card.Text>
-                        <Card.Text>
-                            Status:  <span style={{color:this.state.color,marginRight:'12px',marginLeft:'8px'}}>{this.state.status}</span>
+                        <p style={textStyle}><b>Maker:</b>  {this.props.route.maker}</p>
+                        <p style={textStyle}><b>StartLocation:</b>         {this.props.route.startLocation}</p>
+                        <p style={textStyle}><b>EndLocation:</b>         {this.props.route.endLocation}</p>
+                        <p style={textStyle}><b>Description:</b>          {this.props.route.description}</p>
+                        <p style={textStyle}>
+                            <b>Status:</b>  <span style={{color:this.state.color,marginRight:'12px',marginLeft:'8px'}}>{this.state.status}</span>
                             {this.renderIcon(this.state.iconIndex)}
-                        </Card.Text>
+                        </p>
                         <Accordion>
-                            <Card>
-                                <Card.Body>
-                                    <Accordion.Toggle as={Card.Header} eventKey="0">
-                                        Events
+
+                                    <Accordion.Toggle as={Container} eventKey="0" className="border p-1" style={{display:"flex"}}>
+                                            <span>Events</span>
+                                            <span style={{marginLeft:"auto"}}>
+                                                <span>{this.state.events.length.toString()}</span>
+                                                <FormatAlignJustifyIcon/>
+                                            </span>
                                     </Accordion.Toggle>
                                     <Accordion.Collapse eventKey="0">
-                                        <div>
 
-                                            <p>1. StartEvent receiver by user with usernam Madin</p>
-                                            <p>2. EndEvent received</p>
-                                            <p>3. Route status checking</p>
-                                        </div>
+                                       <Container>
+                                           {this.state.events.map((event,i)=>
+                                                <RouteEventContainer event = {event} num={i+1}/>
+                                           )}
+
+                                       </Container>
 
 
                                     </Accordion.Collapse>
-                                </Card.Body>
-                            </Card>
+
                         </Accordion>
                     </Card.Body>
                 </Card>

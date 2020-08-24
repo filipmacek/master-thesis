@@ -91,6 +91,8 @@ class ConnectionModalsUtil extends Component {
                     isOpen = {this.props.modals.data.statusOfRoutesModalIsOpen}
                     routes={this.props.routes}
                     account = {this.props.account}
+                    startEvents={this.props.startEvents}
+                    endEvents={this.props.endEvents}
                 />
 
 

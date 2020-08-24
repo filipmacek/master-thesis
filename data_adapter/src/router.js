@@ -68,7 +68,7 @@ router.get('/route/:routeId',async (req,res)=> {
         res.send("Error")
     }
 })
-router.get('/route/:routeId/status',async (req,res)=> {
+router.get('/route/status/:routeId',async (req,res)=> {
     res.status(200)
     const routeStatus = await RouteStatus.findOne({routeId:req.params.routeId})
     res.send(routeStatus)
