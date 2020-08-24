@@ -2,12 +2,8 @@ import React, {Component} from 'react';
 import Web3 from "web3";
 import ConnectionModalsUtil from "./ConnectionModalsUtil";
 import {toast} from "react-toastify";
-import {ContractMetadata} from "./ContractMetadata";
+import {address as contractAddress,abi} from '../ContractMetaData'
 
-// Address of smart contract
-const contractAddress=ContractMetadata.address
-// Contract ABI -got it from remixd
-const abi=ContractMetadata.abi
 
 
 const DAppTransactionContext= React.createContext({
@@ -360,20 +356,34 @@ class DAppWeb3 extends Component {
     fetchStartEvents = () => {
         console.log("Fetching start events")
         this.state.contract.methods.getRouteStartEventCount().call().then(async value => {
-            console.log("Start events count ",value)
             var i;
             let startEvents=[]
-            for(i=0;i<value;i++){
-                await this.state.contract.methods.routeStartEvents(i).call().then(event =>{
+            let txHashes = new Map()
+            let txHashPromise = new Promise((resolve,reject) =>{
+                this.state.contract.events.StartRouteEvent({fromBlock:0,toBlock:'latest'},function(error,event){
+                    txHashes[event.returnValues.routeStartId] = event.transactionHash
+                    resolve(event.transactionHash)
+            })})
+            await txHashPromise
+            for(i=0;i<value;i++) {
+
+
+                await this.state.contract.methods.routeStartEvents(i).call().then(event => {
                     startEvents.push({
-                        routeStartId:event.routeStartId,
-                        routeId:event.routeId,
+                        routeStartId: event.routeStartId,
+                        routeId: event.routeId,
                         username: event.username,
-                        timestamp:this.getTimestamp(event.timestamp),
-                        nodeId: event.nodeId
+                        timestamp: this.getTimestamp(event.timestamp),
+                        nodeId: event.nodeId,
+                        node1Status: event.node1Status,
+                        node2Status: event.node2Status,
+                        txHash: txHashes[i]
                     })
                 })
             }
+
+
+
             return startEvents
         }).then( startEvents => {
             console.log("Start Events ",startEvents)
@@ -387,9 +397,17 @@ class DAppWeb3 extends Component {
     fetchEndEvents = () => {
         console.log("Fetching end events")
         this.state.contract.methods.getRouteEndEventCount().call().then(async value => {
-            console.log("End events count ",value)
             var i;
             let endEvents=[]
+            let txHashes = new Map()
+            let txHashPromise = new Promise((resolve,reject) =>{
+                this.state.contract.events.EndRouteEvent({fromBlock:0,toBlock:'latest'},function(error,event){
+                    txHashes[event.returnValues.routeEndId] = event.transactionHash
+                    resolve(event.transactionHash)
+                })})
+            await txHashPromise
+
+
             for(i=0;i<value;i++){
                 await this.state.contract.methods.routeEndEvents(i).call().then(event =>{
                     endEvents.push({
@@ -398,7 +416,10 @@ class DAppWeb3 extends Component {
                         dataPoints: event.dataPoints,
                         timestamp: this.getTimestamp(event.timestamp),
                         nodeId:event.nodeId,
-                        userStatus:event.userStatus
+                        userStatus:event.userStatus,
+                        txHash: txHashes[i],
+                        node1DataPoints:event.node1DataPoints,
+                        node2DataPoints:event.node2DataPoints
 
                     })
                 })
@@ -1218,7 +1239,7 @@ class DAppWeb3 extends Component {
     render() {
         return (
            <div>
-               <DAppTransactionContext.Provider value={this.state} {...this.props}>
+               <DAppTransactionContext.Provider value={this.state} {...this.props}/>
                <ConnectionModalsUtil
                    initAccount={this.state.initAccount}
                    account={this.state.account}
@@ -1235,7 +1256,6 @@ class DAppWeb3 extends Component {
                    contractMethodSendWrapper={this.contractMethodSendWrapper}
                    clearAccount={this.clearAccount}
                />
-               </DAppTransactionContext.Provider>
            </div>
         );
     }

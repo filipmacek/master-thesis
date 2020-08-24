@@ -32,18 +32,15 @@ class StatusOfRoutesModal extends Component {
                             <Modal.Title>Route list</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            <CardGroup>
                                 {this.props.routes.map((item,i) =>
                                     <RouteCard
                                         route={item}
                                         account={this.props.account}
                                         startEvents={startEvents.find(event => event.routeId === item.routeId)}
                                         endEvents = {endEvents.find(event => event.routeId === item.routeId)}
-                                        checkStatusEvent = {}
 
                                     />
                                     )}
-                            </CardGroup>
                         </Modal.Body>
                     </Modal>
 

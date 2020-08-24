@@ -2,7 +2,7 @@ import {Button, Col, Container, Form, Row,FormControl} from "react-bootstrap";
 import React from "react";
 import DAppWeb3 from "../DAppWeb3";
 import {Box, Text} from "rimble-ui";
-
+const Sha256=require('../HashUtils/Sha256')
 
 
 
@@ -24,7 +24,7 @@ class UsersPanel extends React.Component {
         this.props.contractMethodSendWrapper("addUser",
             {
                 username: this.state.username,
-                password: this.state.password,
+                password: Sha256.doubleHash(this.state.password),
                 address: this.state.address })
 
     }
