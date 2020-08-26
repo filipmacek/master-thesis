@@ -1,0 +1,41 @@
+{
+  "initiators": [
+    {
+      "type": "runlog",
+      "params": {}
+    }
+  ],
+  "tasks": [
+    {
+      "type": "httpgetwithunrestrictednetworkaccess",
+      "confirmations": 0,
+      "params": {
+        "get": "http://localhost:3000/api/route/status"
+      }
+    },
+    {
+      "type": "jsonparse",
+      "confirmations": null,
+      "params": {
+        "path": [
+          "time"
+        ]
+      }
+    },
+    {
+      "type": "multiply",
+      "confirmations": null,
+      "params": {
+        "times": "1"
+      }
+    },
+    {
+      "type": "ethuint256",
+      "confirmations": null,
+      "params": {}
+    },
+    {"type":"ethtx"}
+  ],
+  "startAt": null,
+  "endAt": null
+}

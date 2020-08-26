@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import  {Row,Col,Card, Container} from 'react-bootstrap';
+import {Row, Col, Card, Container, Table} from 'react-bootstrap';
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import CancelIcon from "@material-ui/icons/Cancel";
 const textStyle = {
@@ -47,13 +47,55 @@ class RouteEventContainer extends Component {
         return(
             <div>
                 <p style={textStyle}><b>User:</b> {this.props.event.username}</p>
-
+                <p style={textStyle}><b>AppData Points:</b>  {this.props.event.dataPoints}</p>
+                <Container>
+                    <Row>
+                        <Col style={{paddingLeft:"0"}}>
+                            <p style={textStyle}><b>Node1DataPoints</b>  {this.props.event.node1DataPoints}</p>
+                        </Col>
+                        <Col>
+                            <p style={textStyle}><b>Node2DataPoints</b>  {this.props.event.node2DataPoints}</p>
+                        </Col>
+                    </Row>
+                </Container>
+                <p style={textStyle}><b>User Action: </b>{this.props.event.userStatus === "1" ?
+                    <span style={{color:"red"}}>Route Cancelled</span> :
+                    <span style={{color:"green"}}>Route Submitted</span>
+                }</p>
             </div>
         )
 
 
     }
     renderCheckStatus =() =>{
+        return (<div>
+            <p style={textStyle}><b>User:</b> {this.props.event.username}</p>
+            <Table striped bordered hover size="sm">
+                <thead>
+                    <th> </th>
+                    <th>Distance</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Node1</td>
+                    <td>{this.props.event.node1Distance.toString()}</td>
+                    <td>{this.props.event.node1Time.toString()}</td>
+                    <td>{this.props.event.node1Status.toString()}</td>
+                </tr>
+                <tr>
+                    <td>Node2</td>
+                    <td>{this.props.event.node2Distance.toString()}</td>
+                    <td>{this.props.event.node2Time.toString()}</td>
+                    <td>{this.props.event.node2Status.toString()}</td>
+                </tr>
+                </tbody>
+            </Table>
+
+
+        </div>
+        )
 
     }
     renderRouteCompleted = () =>{

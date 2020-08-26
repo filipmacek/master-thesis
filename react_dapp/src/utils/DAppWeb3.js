@@ -281,6 +281,7 @@ class DAppWeb3 extends Component {
                 this.fetchRoutes()
                 this.fetchStartEvents()
                 this.fetchEndEvents()
+                this.fetchCheckStatusEvents()
             })
         } catch (e) {
            console.log("Could not create contract.")
@@ -373,7 +374,7 @@ class DAppWeb3 extends Component {
                         routeStartId: event.routeStartId,
                         routeId: event.routeId,
                         username: event.username,
-                        timestamp: this.getTimestamp(event.timestamp),
+                        timestamp: this.getTimestamp(event.timestamp,0),
                         node1Status: event.node1Status,
                         node2Status: event.node2Status,
                         txHash: txHashes[i]
@@ -389,8 +390,8 @@ class DAppWeb3 extends Component {
             this.setState({startEvents:startEvents})
         })
     }
-    getTimestamp = (t) => {
-        return new Date(t*1000)
+    getTimestamp = (t,temp) => {
+        return new Date(t*1000+temp)
     }
 
     fetchEndEvents = () => {
@@ -414,7 +415,7 @@ class DAppWeb3 extends Component {
                         routeId: event.routeId,
                         dataPoints: event.dataPoints,
                         username: event.username,
-                        timestamp: this.getTimestamp(event.timestamp),
+                        timestamp: this.getTimestamp(event.timestamp,0),
                         userStatus:event.userStatus,
                         txHash: txHashes[i],
                         node1DataPoints:event.node1DataPoints,
@@ -428,6 +429,37 @@ class DAppWeb3 extends Component {
             console.log("End events ",endEvents)
             this.setState({endEvents:endEvents})
         })
+    }
+
+
+    fetchCheckStatusEvents = () => {
+        console.log("Fetching check status events")
+        this.state.contract.methods.getCheckStatusEventCount().call().then(async value =>{
+            console.log("Check status event count")
+            var checkStatusEvents=[]
+            var i;
+            for(i=0;i<value;i++) {
+                await this.state.contract.methods.checkStatusEvents(i).call().then(event =>{
+                    checkStatusEvents.push({
+                        checkStatusId:event.checkStatusId,
+                        routeId: event.routeId,
+                        username: event.username,
+                        timestamp: this.getTimestamp(event.timestamp,10),
+                        node1Distance: event.node1Distance,
+                        node1Time: event.node1Time,
+                        node1Status: event.node1Status,
+                        node2Distance: event.node2Distance,
+                        node2Time: event.node2Time,
+                        node2Status:event.node2Status
+                    })
+                })
+            }
+            return checkStatusEvents;
+        }).then(checkStatusEvents =>{
+            console.log("Check Status Events ",checkStatusEvents)
+            this.setState({checkStatusEvents:checkStatusEvents})
+        })
+
     }
 
 
@@ -1252,6 +1284,7 @@ class DAppWeb3 extends Component {
                    routes={this.state.routes}
                    startEvents = {this.state.startEvents}
                    endEvents = {this.state.endEvents}
+                   checkStatusEvents = {this.state.checkStatusEvents}
                    contractMethodSendWrapper={this.contractMethodSendWrapper}
                    clearAccount={this.clearAccount}
                />

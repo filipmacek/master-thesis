@@ -26,5 +26,3 @@ while read ip;do
   echo "Gotovo za ${ip}"
 done <ips
 
-## execute update.sh script to update dapp.filipmacek.io
-../react_dapp/scripts/update.sh

@@ -93,6 +93,7 @@ class ConnectionModalsUtil extends Component {
                     account = {this.props.account}
                     startEvents={this.props.startEvents}
                     endEvents={this.props.endEvents}
+                    checkStatusEvents = {this.props.checkStatusEvents}
                 />
 
 

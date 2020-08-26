@@ -82,7 +82,7 @@ class RouteCard extends Component {
 
 
 
-        this.setState({events:_.concat(this.props.startEvents,this.props.endEvents)
+        this.setState({events:_.concat(this.props.startEvents,this.props.endEvents,this.props.checkStatusEvents)
                 .sort((a,b)=>(a.timestamp > b.timestamp ? 1 : -1) )},()=>{
         })
 

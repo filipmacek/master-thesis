@@ -33,6 +33,7 @@ class StatusOfRoutesModal extends Component {
                                         account={this.props.account}
                                         startEvents={this.props.startEvents.filter(event => event.routeId === item.routeId)}
                                         endEvents = {this.props.endEvents.filter(event => event.routeId === item.routeId)}
+                                        checkStatusEvents = {this.props.checkStatusEvents.filter(event => event.routeId === item.routeId)}
                                     />
                                     )}
 

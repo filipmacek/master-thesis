@@ -14,7 +14,7 @@ contract Movement is ChainlinkClient,Ownable{
     // He assign Chainlink nodes with responsibilty for data extraction,filtering,mining coordinates data
     address private agent;
     
-    uint constant private ORACLE_PAYMENT = 10^17; // 0.1LINK
+    uint constant private ORACLE_PAYMENT = 1*LINK; // 0.1LINK
     address constant LINK_TOKEN_ADDRESS =0xa36085F69e2889c224210F603D836748e7dC0088;
     
  
@@ -79,7 +79,12 @@ contract Movement is ChainlinkClient,Ownable{
         uint routeId;
         string username; // for which user we are checking if he completed the route;
         uint timestamp;
-        
+        uint node1Distance;
+        uint node1Time;
+        bool node1Status;
+        uint node2Distance;
+        uint node2Time;
+        bool node2Status;
     }
     CheckStatusEvent[] public checkStatusEvents;  
        
@@ -128,6 +133,8 @@ contract Movement is ChainlinkClient,Ownable{
     constructor(address _agent)public Ownable(){
         agent = _agent;
         //sets the stored address for LINK token and initializes proper interface for LINK so we can send and receive token
+        setChainlinkToken(LINK_TOKEN_ADDRESS);
+        
         
         // init madin User
         addUser("Madin","pass");
@@ -140,8 +147,14 @@ contract Movement is ChainlinkClient,Ownable{
         
       
         // init nodes
-        addNode("Koala","100.26.234.183","api",0x289263696E145BE938c70859371ED0E1a23c9b0C,"abc","cde","efg");
-        addNode("Lion","52.91.148.208","api",0x2eF56656657601993EcdDE122B286E2d001196dA,"klo","ment","tov");
+        addNode("Koala","100.26.234.183","api",0x289263696E145BE938c70859371ED0E1a23c9b0C,
+                "b0706441803646aaa630a0f10d1fa554",
+                "b785755641924c4da504345eb01f87d3",
+                "7fbd91ca2ece479991a80c6e090493d3");
+        addNode("Lion","52.91.148.208","api",0x2eF56656657601993EcdDE122B286E2d001196dA,
+                "58af0011d85f47e287fdd2c73c1e9b27",
+                "56a5f2427dfa4666b2b379531060fddf",
+                "f1a81e713519493697bfec51331e7d42");
     }
 
 
@@ -158,6 +171,8 @@ contract Movement is ChainlinkClient,Ownable{
     event EndRouteEvent(uint routeEndId);
     
     event StatusCheckEvent(uint checkStatusId);
+    
+    event StatusCheckFulfilled(uint checkStatusId);
     
     event CompletedRouteEvent(uint routeCompletedId);
 
@@ -242,6 +257,11 @@ contract Movement is ChainlinkClient,Ownable{
            routes[_routeId-1].isFinished =true;
            users[userIndexByUsername[_username]].routesFinished+=1;
            
+           
+           // User submited route - call requestRouteStatus to ask chainlink nodes about route status
+           requestRouteStatus(_routeId,_username);
+           
+           
            emit EndRouteEvent(routeEndEvents.length-1);
             
         }
@@ -253,60 +273,126 @@ contract Movement is ChainlinkClient,Ownable{
     }
     
     // Request route status by user on dapp
-    function requestRouteStatus(uint _routeId) private {
-    
+    function requestRouteStatus(uint _routeId,string memory _username) private {
+        
+        string memory _routeIdString = uintToString(_routeId);
 
-        // Chainlink.Request memory req = buildChainlinkRequest(stringToBytes32(_jobID),address(this),this.fulfillRouteStatus.selector);
-        // req.add("extPath","1");
-        // sendChainlinkRequestTo(_oracleAddress,req,ORACLE_PAYMENT);
+    
+        // Init CheckStatusEvent data -- we will write to this variable all our results
+        checkStatusEvents.push(CheckStatusEvent(checkStatusEvents.length+1,_routeId,_username,now,0,0,false,0,0,false));
+        emit StatusCheckEvent(checkStatusEvents.length);
         
         
-        // for(uint i=0;i<nodes.length;i++){
-        //     // Time Request
-        //     Chainlink.Request memory req = buildChainlinkRequest(stringToBytes32)
+        //--------------Node 1 -----------------------
+            // Distance Data Request
+            Chainlink.Request memory req1 = buildChainlinkRequest(stringToBytes32(nodes[0].jobIdDistance),address(this),this.fulfillDistanceRequest1.selector);
+            req1.add("extPath",_routeIdString);
+            sendChainlinkRequestTo(nodes[0].oracleContractAddress,req1,ORACLE_PAYMENT);
             
-        //     //Distance Request
+            // // Time Data Request
+             Chainlink.Request memory req2 = buildChainlinkRequest(stringToBytes32(nodes[0].jobIdTime),address(this),this.fulfillTimeRequest1.selector);
+            req2.add("extPath",_routeIdString);
+            sendChainlinkRequestTo(nodes[0].oracleContractAddress,req2,ORACLE_PAYMENT);
             
-        //     // Status Request
-        // }
+            // Status Data Request
+             Chainlink.Request memory req3 = buildChainlinkRequest(stringToBytes32(nodes[0].jobIdStatus),address(this),this.fulfillStatusRequest1.selector);
+            req3.add("extPath",_routeIdString);
+            sendChainlinkRequestTo(nodes[0].oracleContractAddress,req3,ORACLE_PAYMENT);
         
+       
+       
+        // -------------------- Node 2 -------------------------------
+           // Distance Data Request
+            Chainlink.Request memory req4 = buildChainlinkRequest(stringToBytes32(nodes[1].jobIdDistance),address(this),this.fulfillDistanceRequest2.selector);
+            req4.add("extPath",_routeIdString);
+            sendChainlinkRequestTo(nodes[1].oracleContractAddress,req4,ORACLE_PAYMENT);
+            
+            // // Time Data Request
+             Chainlink.Request memory req5 = buildChainlinkRequest(stringToBytes32(nodes[1].jobIdTime),address(this),this.fulfillTimeRequest2.selector);
+            req5.add("extPath",_routeIdString);
+            sendChainlinkRequestTo(nodes[1].oracleContractAddress,req5,ORACLE_PAYMENT);
+            
+            //Status Data Request
+             Chainlink.Request memory req6 = buildChainlinkRequest(stringToBytes32(nodes[1].jobIdStatus),address(this),this.fulfillStatusRequest2.selector);
+            req6.add("extPath",_routeIdString);
+            sendChainlinkRequestTo(nodes[1].oracleContractAddress,req6,ORACLE_PAYMENT);
+            
+            emit StatusCheckFulfilled(checkStatusEvents.length);
+
+    }
+
+    
+    // Distance Callback for node1 && node2
+    
+    function fulfillDistanceRequest1(bytes32 _requestId,uint _distance)public recordChainlinkFulfillment(_requestId){
+        checkStatusEvents[checkStatusEvents.length-1].node1Distance = _distance;
+        
+    }
+     function fulfillDistanceRequest2(bytes32 _requestId,uint _distance)public recordChainlinkFulfillment(_requestId){
+        checkStatusEvents[checkStatusEvents.length-1].node2Distance = _distance;
         
     }
     
-    function getStatusEventCount () public view returns(uint){
+    
+    
+    // Time Callbacks for node1 && node2
+    
+    function fulfillTimeRequest1(bytes32 _requestId,uint _time)public recordChainlinkFulfillment(_requestId){
+        checkStatusEvents[checkStatusEvents.length-1].node1Time=_time;
+
+    }
+     function fulfillTimeRequest2(bytes32 _requestId,uint _time)public recordChainlinkFulfillment(_requestId){
+        checkStatusEvents[checkStatusEvents.length-1].node2Time=_time;
+
+    }
+    
+    
+    
+    // Status Callbacks for node1 && node2
+    
+     function fulfillStatusRequest1(bytes32 _requestId,bool _status)public recordChainlinkFulfillment(_requestId){
+        checkStatusEvents[checkStatusEvents.length-1].node1Status = _status;
+        
+    }
+        function fulfillStatusRequest2(bytes32 _requestId,bool _status)public recordChainlinkFulfillment(_requestId){
+        checkStatusEvents[checkStatusEvents.length-1].node2Status = _status;
+        
+    }
+    
+    
+    
+    
+    
+    function getCheckStatusEventCount () public view returns(uint){
         return checkStatusEvents.length;
     }
     
     
-    function fulfillRouteStatus(bytes32 _requestId,bool _status) public recordChainlinkFulfillment(_requestId){
-        // emit RouteStatusFulfilled(_requestId,_status);
-        // routes[0].isFinished = _status;
-        
-    }
+ 
     function getRouteCompletedEventCount() public view returns (uint){
         return routeCompletedEvents.length;
     }
 
     
     
-    function deleteUser(string memory _username) public returns(bool) {
-        // require(users.length>0);
+    // function deleteUser(string memory _username) public returns(bool) {
+    //     // require(users.length>0);
         
-        // for(uint i=0;i<users.length;i++){
-        //     if(compareStrings(users[i].username,_username)){
-        //         users[i].username=users[users.length-1].username;
-        //         users[i].password=users[users.length-1].password;
-        //         users[i].addr=users[users.length-1].addr;
-        //          users.pop();
-        //         emit UserDeleted(_username);
-        //         return true;
-        //     }
-        // }
+    //     // for(uint i=0;i<users.length;i++){
+    //     //     if(compareStrings(users[i].username,_username)){
+    //     //         users[i].username=users[users.length-1].username;
+    //     //         users[i].password=users[users.length-1].password;
+    //     //         users[i].addr=users[users.length-1].addr;
+    //     //          users.pop();
+    //     //         emit UserDeleted(_username);
+    //     //         return true;
+    //     //     }
+    //     // }
        
-        // return false;
+    //     // return false;
         
         
-    }
+    // }
     
     function getUserIdWithAddress(address _address)private view returns(uint){
         require(users.length>0);
@@ -320,23 +406,23 @@ contract Movement is ChainlinkClient,Ownable{
         revert('User with this address doesnt exist');
     }
     
-    function deleteNode(uint _nodeId) public returns(bool){
-        // require(nodes.length>0);
-        // uint len = nodes.length;
-        // for(uint i=0;i<len;i++){
-        //     if(nodes[i].nodeId == _nodeId){
-        //         nodes[i].nodeId = nodes[len-1].nodeId;
-        //         nodes[i].nodeName = nodes[len-1].nodeName;
-        //         nodes[i].ip = nodes[len-1].ip;
-        //         nodes[i].data_endpoint = nodes[len-1].data_endpoint;
-        //         nodes[i].oracleContractAddress = nodes[len-1].oracleContractAddress;
-        //         nodes.pop();
-        //         emit NodeDeleted(_nodeId);
-        //         return true;
-        //     }
-        // }
-        // return false;
-    }
+    // function deleteNode(uint _nodeId) public returns(bool){
+    //     // require(nodes.length>0);
+    //     // uint len = nodes.length;
+    //     // for(uint i=0;i<len;i++){
+    //     //     if(nodes[i].nodeId == _nodeId){
+    //     //         nodes[i].nodeId = nodes[len-1].nodeId;
+    //     //         nodes[i].nodeName = nodes[len-1].nodeName;
+    //     //         nodes[i].ip = nodes[len-1].ip;
+    //     //         nodes[i].data_endpoint = nodes[len-1].data_endpoint;
+    //     //         nodes[i].oracleContractAddress = nodes[len-1].oracleContractAddress;
+    //     //         nodes.pop();
+    //     //         emit NodeDeleted(_nodeId);
+    //     //         return true;
+    //     //     }
+    //     // }
+    //     // return false;
+    // }
     
     
     function compareStrings (string memory a, string memory b) public view returns (bool) {
@@ -368,6 +454,26 @@ contract Movement is ChainlinkClient,Ownable{
             
         }
     }
+    
+     function uintToString(uint _i) internal pure returns (string memory _uintAsString) {
+    if (_i == 0) {
+        return "0";
+    }
+    uint j = _i;
+    uint len;
+    while (j != 0) {
+        len++;
+        j /= 10;
+    }
+    bytes memory bstr = new bytes(len);
+    uint k = len - 1;
+    while (_i != 0) {
+        bstr[k--] = byte(uint8(48 + _i % 10));
+        _i /= 10;
+    }
+    return string(bstr);
+}
+    
 
 
     // modifiers
