@@ -12,12 +12,18 @@ contract Movement is ChainlinkClient,Ownable{
     // He is not responsible for knowing is user completed the route or any data related to route
     // He only record on blockchain UI events that happend
     // He assign Chainlink nodes with responsibilty for data extraction,filtering,mining coordinates data
+    
+    
     address private agent;
     
-    uint constant private ORACLE_PAYMENT = 1*LINK; // 0.1LINK
+    uint constant private ORACLE_PAYMENT = 1*LINK; 
+    
     address constant LINK_TOKEN_ADDRESS =0xa36085F69e2889c224210F603D836748e7dC0088;
     
- 
+     
+    // Constants related to states that can happen with started route
+     uint constant USER_CANCELED = 1;
+     uint constant USER_SUBMITED_ROUTE = 2;
                                     
                                     
                                          
@@ -36,6 +42,9 @@ contract Movement is ChainlinkClient,Ownable{
     mapping(string =>bool) userExistsByUsername;
     mapping(address => bool) userExistsByAddress;
     mapping(string => uint) userIndexByUsername;
+    // Users array
+    User[] public users;
+    
     
     struct Route {
         uint routeId;
@@ -48,7 +57,10 @@ contract Movement is ChainlinkClient,Ownable{
         bool isCompleted;
         string description;
     }
+     // Routes array
+    Route[] public routes;
     
+
     struct RouteStartEvent{
         uint routeStartId;
         uint routeId;  // which route
@@ -99,10 +111,7 @@ contract Movement is ChainlinkClient,Ownable{
     RouteCompletedEvent[] public routeCompletedEvents;
     
     
-    
-    // Constants related to states that can happen with started route
-     uint constant USER_CANCELED = 1;
-     uint constant USER_SUBMITED_ROUTE = 2;
+
     
     struct Node {
         uint nodeId;
@@ -115,14 +124,6 @@ contract Movement is ChainlinkClient,Ownable{
         string jobIdTime;
         string jobIdStatus;
         }
-    
-    
-    // Users array
-    User[] public users;
-
-    // Routes array
-    Route[] public routes;
-    
     // Nodes array
     Node[] public nodes;
     
@@ -150,7 +151,7 @@ contract Movement is ChainlinkClient,Ownable{
         addNode("Koala","100.26.234.183","api",0x289263696E145BE938c70859371ED0E1a23c9b0C,
                 "b0706441803646aaa630a0f10d1fa554",
                 "b785755641924c4da504345eb01f87d3",
-                "7fbd91ca2ece479991a80c6e090493d3");
+                "7fbd91ca2ece4sc79991a80c6e090493d3");
         addNode("Lion","52.91.148.208","api",0x2eF56656657601993EcdDE122B286E2d001196dA,
                 "58af0011d85f47e287fdd2c73c1e9b27",
                 "56a5f2427dfa4666b2b379531060fddf",
@@ -160,10 +161,8 @@ contract Movement is ChainlinkClient,Ownable{
 
   //============= Events =======================
 
-    // User events
     event UserCreated(uint userIndex);
     
-    // Routes events
     event RouteCreated(uint routeIndex);
     
     event StartRouteEvent(uint routeStartId);
@@ -196,10 +195,15 @@ contract Movement is ChainlinkClient,Ownable{
     
     
     function addNode(string memory _name,string memory _ip,string memory _data_endpoint,
-                    address _oracleContractAddress,string memory _jobIdDistance,
-                    string memory _jobIdTime,string memory _jobIdStatus) private {
+                    address _oracleContractAddress,
+                    string memory _jobIdDistance,
+                    string memory _jobIdTime,
+                    string memory _jobIdStatus) private {
         nodes.push(Node(nodes.length+1,_name,_ip,_data_endpoint,_oracleContractAddress,0,_jobIdDistance,_jobIdTime,_jobIdStatus));
     }
+    
+    
+    // Get Count funkcije
     
     function getUsersCount() public view returns(uint) {
         return users.length;
@@ -212,7 +216,18 @@ contract Movement is ChainlinkClient,Ownable{
     function getNodesCount()public view returns(uint){
         return nodes.length;
     
+    }   
+    function getRouteStartEventCount() public view returns(uint){
+        return routeStartEvents.length;
     }
+    function getRouteEndEventCount() public view returns(uint){
+        return routeEndEvents.length;
+    }
+    function getCheckStatusEventCount () public view returns(uint){
+        return checkStatusEvents.length;
+    }
+    
+    
     
     // Agents functions
     function startRouteEvent(uint _routeId,string memory _username,bool _node1Status,bool _node2Status) public onlyAgent{
@@ -233,10 +248,7 @@ contract Movement is ChainlinkClient,Ownable{
         
         
     }
-    function getRouteStartEventCount() public view returns(uint){
-        return routeStartEvents.length;
-    }
-    
+ 
   
     
     function endRouteEvent(uint _routeId,string memory _username,uint user_event,uint _dataPoints,uint _node1DataPoints,uint _node2DataPoints)public onlyAgent{
@@ -268,9 +280,7 @@ contract Movement is ChainlinkClient,Ownable{
         
     }
     
-      function getRouteEndEventCount() public view returns(uint){
-        return routeEndEvents.length;
-    }
+   
     
     // Request route status by user on dapp
     function requestRouteStatus(uint _routeId,string memory _username) private {
@@ -363,10 +373,7 @@ contract Movement is ChainlinkClient,Ownable{
     
     
     
-    function getCheckStatusEventCount () public view returns(uint){
-        return checkStatusEvents.length;
-    }
-    
+  
     
  
     function getRouteCompletedEventCount() public view returns (uint){
