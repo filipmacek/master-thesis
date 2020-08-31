@@ -69,7 +69,7 @@ class App extends Component {
                                             <img src="/static/run_icon.png" alt="Movement DApp logo"/>
                                         </Heading.h2>
                                       <Text fontFamily="sansSerif">
-                                            This is Movement DApp. An decentralized application deployed on Rinkeby Ethereum testnet blockhain.
+                                            This is Movement DApp. An decentralized application deployed on Kovan Ethereum testnet blockhain.
                                             It offers way of communication with smart contracts deployed on blockchain.
                                             Use MetaMask to interact with dapp.
                                       </Text>
