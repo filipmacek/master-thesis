@@ -260,7 +260,6 @@ class DAppWeb3 extends Component {
     checkIfUserCreated = () =>{
 
         const userExists=this.state.users.find(user =>user.address.toLowerCase()===this.state.account.toLowerCase())
-        console.log("User exists ",userExists)
         if(userExists !== undefined){
             console.log("User is already created")
             this.setState({user:userExists})
@@ -386,7 +385,6 @@ class DAppWeb3 extends Component {
 
             return startEvents
         }).then( startEvents => {
-            console.log("Start Events ",startEvents)
             this.setState({startEvents:startEvents})
         })
     }
@@ -426,7 +424,6 @@ class DAppWeb3 extends Component {
             }
             return endEvents
         }).then(endEvents =>{
-            console.log("End events ",endEvents)
             this.setState({endEvents:endEvents})
         })
     }
@@ -435,7 +432,6 @@ class DAppWeb3 extends Component {
     fetchCheckStatusEvents = () => {
         console.log("Fetching check status events")
         this.state.contract.methods.getCheckStatusEventCount().call().then(async value =>{
-            console.log("Check status event count")
             var checkStatusEvents=[]
             var i;
             for(i=0;i<value;i++) {
@@ -456,7 +452,6 @@ class DAppWeb3 extends Component {
             }
             return checkStatusEvents;
         }).then(checkStatusEvents =>{
-            console.log("Check Status Events ",checkStatusEvents)
             this.setState({checkStatusEvents:checkStatusEvents})
         })
 
